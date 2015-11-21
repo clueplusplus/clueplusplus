@@ -34,7 +34,7 @@ import javax.swing.border.LineBorder;
 /**
  * GUI for the game.
  */
-public class ClueGUI {
+public class GameBoardGUI {
 
     private final JPanel gui = new JPanel(new BorderLayout(3, 3));
     private final JComponent[][] locations = new JComponent[5][5];
@@ -48,7 +48,7 @@ public class ClueGUI {
     /**
      * Creates an instance of the class.
      */
-    public ClueGUI() {
+    public GameBoardGUI() {
         initializeGui();
     }
 
@@ -59,9 +59,8 @@ public class ClueGUI {
         createDefaultGameBoardImages();
         createGameBoardPanel();
         gui.setBorder(new EmptyBorder(4, 4, 4, 4));
-        gameBoard.setBorder(new CompoundBorder(new EmptyBorder(5, 5, 5, 5), new LineBorder(Color.BLACK)));
-        Color backgroundColor = new Color(204, 119, 34);
-        setGameBoardScope(backgroundColor);
+        gameBoard.setBorder(new CompoundBorder(new EmptyBorder(1, 1, 1, 1), new LineBorder(Color.BLACK)));
+        setGameBoardScope();
         setupGameBoard();
         createPhysicalGameBoard();
     }
@@ -81,7 +80,6 @@ public class ClueGUI {
      * Sets up the game board to have the proper images at each location.
      */
     private void setupGameBoard() {
-        Insets buttonMargin = new Insets(0, 0, 0, 0);
         for (int row = 0; row < locations.length; row++) {
             for (int column = 0; column < locations[row].length; column++) {
                 ImageIcon icon = new ImageIcon(new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB));
@@ -92,24 +90,19 @@ public class ClueGUI {
                     locations[row][column] = label;
                 } else {
                     // Create a button with the correct image.
-                    JButton button = new JButton();
-                    button.setMargin(buttonMargin);
-                    button.setIcon(icon);
-                    button.setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
-                    locations[row][column] = button;
+                    JLabel label = new JLabel();
+                    label.setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
+                    locations[row][column] = label;
                 }
             }
         }
     }
 
     /**
-     * Sets the scope of the game board with the color.
-     * 
-     * @param backgroundColor The color to set.
+     * Sets the scope of the game board.
      */
-    private void setGameBoardScope(Color backgroundColor) {
+    private void setGameBoardScope() {
         JPanel boardScope = new JPanel(new GridBagLayout());
-        boardScope.setBackground(backgroundColor);
         boardScope.add(gameBoard);
         gui.add(boardScope);
     }
@@ -150,17 +143,17 @@ public class ClueGUI {
      * Creates the default game board images.
      */
     private void createDefaultGameBoardImages() {
-        InputStream hallway = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Hallway.jpg");
+        InputStream hallway = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Locations/Hallway.jpg");
         BufferedImage biHallway = null;
         try {
             biHallway = ImageIO.read(hallway);
         } catch (IOException ex) {
-            Logger.getLogger(ClueGUI.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 hallway.close();
             } catch (IOException ex) {
-                Logger.getLogger(ClueGUI.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         int count = 0;
@@ -168,17 +161,17 @@ public class ClueGUI {
             for (int column = 0; column < locations[row].length; column++) {
                 // If column 0, 2, or 4 in row 0, 2, or 4 use a room.
                 if (row % 2 == 0 && column % 2 == 0) {
-                    InputStream room = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/" + roomImagePaths.get(count) + ".jpg");
+                    InputStream room = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Locations/" + roomImagePaths.get(count) + ".jpg");
                     BufferedImage biRoom = null;
                     try {
                         biRoom = ImageIO.read(room);
                     } catch (IOException ex) {
-                        Logger.getLogger(ClueGUI.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
                     } finally {
                         try {
                             room.close();
                         } catch (IOException ex) {
-                            Logger.getLogger(ClueGUI.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                     locationImages[row][column] = biRoom;
