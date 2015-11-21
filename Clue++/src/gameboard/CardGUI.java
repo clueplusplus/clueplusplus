@@ -21,6 +21,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/**
+ * GUI to display the cards.
+ */
 public class CardGUI {
 	private final JPanel gui = new JPanel();
 	private JPanel cardBoard;
@@ -31,6 +34,9 @@ public class CardGUI {
 					"Rooms/Library", "Rooms/Lounge", "Rooms/Study", "Weapons/CandleStick", "Weapons/Knife",
 					"Weapons/LeadPipe", "Weapons/Revolver", "Weapons/Rope", "Weapons/Wrench"));
 
+	/**
+	 * Creates instance of the Card GUI.
+	 */
 	public CardGUI() {
 		initializeGui();
 	}
@@ -42,35 +48,44 @@ public class CardGUI {
         return gui;
     }
 
+    /**
+     * Initializes the GUI.
+     */
 	private void initializeGui() {
+		// TODO: pull correct cards.
 		List<String> myCards = getRandom10();
 		displayCards(myCards);
 	}
 
+	/**
+	 * Displays the cards on the board.
+	 * 
+	 * @param myCards The cards to display.
+	 */
 	private void displayCards(List<String> myCards) {
 		createCardBoard();
-		setCardBoardScope(new Color(204, 119, 34));
+		setCardBoardScope();
 		setupCardBoard(myCards);
 	}
 	
 	 /**
-     * Sets the scope of the game board with the color.
-     * 
-     * @param backgroundColor The color to set.
+     * Sets the scope of the cards.
      */
-    private void setCardBoardScope(Color backgroundColor) {
+    private void setCardBoardScope() {
         JPanel boardScope = new JPanel(new GridBagLayout());
-        boardScope.setBackground(backgroundColor);
         boardScope.add(cardBoard);
         gui.add(boardScope);
     }
 
+    /**
+     * Creates the card board.
+     */
 	private void createCardBoard() {
 		cardBoard = new JPanel(new GridLayout(1, 10)); 
 	}
 
 	/**
-	 * Sets up the game board to have the proper images at each location.
+	 * Sets up the card board to have the proper images.
 	 */
 	private void setupCardBoard(List<String> cards) {
 		for (String card : cards) {
@@ -81,10 +96,18 @@ public class CardGUI {
 		}
 	}
 
+	/**
+	 * Gets the correct image for the card to display.
+	 * 
+	 * @param card The card to display.
+	 * @return The image.
+	 */
 	private Image getImage(String card) {
+		// Load the correct input stream.
 		InputStream cardStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Cards/" + card + ".jpg");
         BufferedImage cardImage = null;
         try {
+        	// Read the image.
             cardImage = ImageIO.read(cardStream);
         } catch (IOException ex) {
             Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,6 +121,11 @@ public class CardGUI {
 		return cardImage;
 	}
 
+	/**
+	 * Temp method to choose cards.
+	 * 
+	 * @return The list of card names.
+	 */
 	private List<String> getRandom10() {
 		List<String> shuffledCardPaths = cardImagePaths;
 		Collections.shuffle(shuffledCardPaths);
