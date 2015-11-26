@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 /**
- * Kicks of the start of the game.
+ * Kicks off the start of the game.
  */
 public class Game {
 
