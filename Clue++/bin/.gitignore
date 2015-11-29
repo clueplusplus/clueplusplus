@@ -1,0 +1,16 @@
+/Game$1.class
+/Game.class
+/gameboard/
+/resources/
+/AppServer.class
+/AppServerConnection.class
+/ClientConnection.class
+/NetworkDecoder.class
+/NetworkEncoder.class
+/SocketDecoder.class
+/SocketClientConnection.class
+/SocketEncoder.class
+/SocketServerListener.class
+/SocketServerConnection.class
+/SocketServer.class
+/GameInformation.class
