@@ -20,7 +20,7 @@ public class SocketServer implements Runnable
 	
 	public SocketServer()
 	{
-		game = Game.GetInstance();
+		game = Game.getInstance();
 	}
 	
 	public void startServer(int port)

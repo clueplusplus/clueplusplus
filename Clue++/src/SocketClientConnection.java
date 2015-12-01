@@ -25,7 +25,7 @@ public class SocketClientConnection implements Runnable
 	
 	public SocketClientConnection()
 	{
-		game = Game.GetInstance();
+		game = Game.getInstance();
 	}
 	
 	public void connect(String ipaddr, int port)

@@ -31,44 +31,33 @@ public class Game {
     ChecklistGUI checklistGui;
     JFrame frame;
 	
-	private Game()
-	{
+	private Game() {
 		
 	}
 
-	static public Game GetInstance()
-	{
-		if(instance == null)
+	public static Game getInstance() {
+		if(instance == null) {
 			instance = new Game();
-		
+		}
+
 		return instance;
-	}	
+	}
+
+	private Game initializeGUIComponents() {
+		this.gameBoardGui = new GameBoardGUI();
+		this.cardGui = new CardGUI();
+		this.checklistGui = new ChecklistGUI();
+		this.frame = new JFrame("Clue...Less");
+
+		return this;
+	}
 	
     public static void main(String[] args) {
         Runnable run = new Runnable() {
             @Override
             public void run() {
-            	Game game = Game.GetInstance();
-            	
-            	game.gameBoardGui = new GameBoardGUI();
-            	game.cardGui = new CardGUI();
-            	game.checklistGui = new ChecklistGUI();
-            	game.frame = new JFrame("Clue...Less");
-            	
-            	// To keep "game." out of everything.
-            	GameBoardGUI gameBoardGui = game.gameBoardGui;
-                CardGUI cardGui = game.cardGui;
-                ChecklistGUI checklistGui = game.checklistGui;
-                JFrame frame = game.frame;
-            	
-                frame.add(gameBoardGui.getGui(), BorderLayout.WEST);
-                frame.add(cardGui.getGui(), BorderLayout.SOUTH);
-                frame.add(checklistGui.getGui(), BorderLayout.EAST);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Need Exit to kill all the socket threads. Not going for graceful
-                frame.setLocationByPlatform(true);
-                frame.pack();
-                frame.setMinimumSize(frame.getSize());
-                frame.setVisible(true);
+            	Game game = Game.getInstance().initializeGUIComponents();
+				JFrame frame = createGameJFrame(game);
                 
                 // Is this going to run as the server?                
                 Object[] options = {"Server", "Client (Player)"};
@@ -83,45 +72,71 @@ public class Game {
 								
 				if(choice == 1)
 				{
-					// Initialize client connection.
-					game.iAmServer = false;
-					
-					String s = (String)JOptionPane.showInputDialog(
-					                    frame,
-					                    "What is the server IP?",
-					                    "IP Address?",
-					                    JOptionPane.PLAIN_MESSAGE,
-					                    null,
-					                    null,
-					                    game.ipAddr);
-
-					// Attempt to connect to the server. Note there is no error checking.
-					game.ipAddr = s;
-					game.clientConnection = new SocketClientConnection();
-					game.clientConnection.connect(s, game.port);
-					
-					// My test to see if the connection works or not.
-					if(game.clientConnection.waitForConnection(10))
-					{
-						System.out.println("Connected!");
-					}
-					else
-					{
-						System.out.println("The IP Address is probably wrong...");
-						game.clientConnection.attemptToConnect = false;
-					}
+					startClientConnection(game, frame);
 				}
 				else
 				{
-					// Initialize the server connection
-					game.iAmServer = true;
-					
-					game.socketServer = new SocketServer();
-					game.socketServer.startServer(game.port);					
+					startServerConnection(game);
 				}
 				
             }
         };
         SwingUtilities.invokeLater(run);
     }
+
+	private static void startServerConnection(Game game) {
+		// Initialize the server connection
+		game.iAmServer = true;
+
+		game.socketServer = new SocketServer();
+		game.socketServer.startServer(game.port);
+	}
+
+	private static void startClientConnection(Game game, JFrame frame) {
+		// Initialize client connection.
+		game.iAmServer = false;
+
+		String s = (String)JOptionPane.showInputDialog(
+                            frame,
+                            "What is the server IP?",
+                            "IP Address?",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            null,
+                            game.ipAddr);
+
+		// Attempt to connect to the server. Note there is no error checking.
+		game.ipAddr = s;
+		game.clientConnection = new SocketClientConnection();
+		game.clientConnection.connect(s, game.port);
+
+		// My test to see if the connection works or not.
+		if(game.clientConnection.waitForConnection(10))
+        {
+            System.out.println("Connected!");
+        }
+        else
+        {
+            System.out.println("The IP Address is probably wrong...");
+            game.clientConnection.attemptToConnect = false;
+        }
+	}
+
+	private static JFrame createGameJFrame(Game game) {
+		GameBoardGUI gameBoardGui = game.gameBoardGui;
+		CardGUI cardGui = game.cardGui;
+		ChecklistGUI checklistGui = game.checklistGui;
+
+		JFrame frame = game.frame;
+
+		frame.add(gameBoardGui.getGui(), BorderLayout.WEST);
+		frame.add(cardGui.getGui(), BorderLayout.SOUTH);
+		frame.add(checklistGui.getGui(), BorderLayout.EAST);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Need Exit to kill all the socket threads. Not going for graceful
+		frame.setLocationByPlatform(true);
+		frame.pack();
+		frame.setMinimumSize(frame.getSize());
+		frame.setVisible(true);
+		return frame;
+	}
 }
