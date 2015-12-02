@@ -32,6 +32,8 @@ public class Game {
     ChecklistGUI checklistGui;
     JFrame frame;
 	
+    Map map = new Map();
+    
 	private Game() {
 		
 	}
@@ -49,7 +51,7 @@ public class Game {
 		this.cardGui = new CardGUI();
 		this.checklistGui = new ChecklistGUI();
 		this.frame = new JFrame("Clue...Less");
-
+		
 		return this;
 	}
 	
@@ -61,7 +63,7 @@ public class Game {
 				JFrame frame = createGameJFrame(game);
                 
                 // Is this going to run as the server?                
-                Object[] options = {"Server", "Client (Player)"};
+                Object[] options = {"Server", "Client"};
 				int choice = JOptionPane.showOptionDialog(frame,
 						"Is the server or a client?",
 						"?",
@@ -73,11 +75,14 @@ public class Game {
 								
 				if(choice == 1)
 				{
+					game.iAmServer = false;
 					startClientConnection(game, frame);
 				}
 				else
 				{
+					game.iAmServer = true;
 					startServerConnection(game);
+					startClientConnection(game, frame);
 				}
 
 				//TODO set up game: distribute cards to player one and player two, put in folder, choose characters, etc.
@@ -156,29 +161,29 @@ public class Game {
 
 	private static void startServerConnection(Game game) {
 		// Initialize the server connection
-		game.iAmServer = true;
-
 		game.socketServer = new SocketServer();
 		game.socketServer.startServer(game.port);
 	}
 
 	private static void startClientConnection(Game game, JFrame frame) {
 		// Initialize client connection.
-		game.iAmServer = false;
-
-		String s = (String)JOptionPane.showInputDialog(
-                            frame,
-                            "What is the server IP?",
-                            "IP Address?",
-                            JOptionPane.PLAIN_MESSAGE,
-                            null,
-                            null,
-                            game.ipAddr);
-
+		if(!game.iAmServer)
+		{
+			String s = (String)JOptionPane.showInputDialog(
+	                            frame,
+	                            "What is the server IP?",
+	                            "IP Address?",
+	                            JOptionPane.PLAIN_MESSAGE,
+	                            null,
+	                            null,
+	                            game.ipAddr);
+			
+			game.ipAddr = s;
+		}
+		
 		// Attempt to connect to the server. Note there is no error checking.
-		game.ipAddr = s;
 		game.clientConnection = new SocketClientConnection();
-		game.clientConnection.connect(s, game.port);
+		game.clientConnection.connect(game.ipAddr, game.port);
 
 		// My test to see if the connection works or not.
 		if(game.clientConnection.waitForConnection(10))
