@@ -4,6 +4,7 @@ import gameboard.ChecklistGUI;
 import gameboard.GameBoardGUI;
 
 import java.awt.BorderLayout;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -78,11 +79,80 @@ public class Game {
 				{
 					startServerConnection(game);
 				}
-				
+
+				//TODO set up game: distribute cards to player one and player two, put in folder, choose characters, etc.
+
+				if (game.iAmServer) {
+					playGameAsPlayerOne(game);
+				} else {
+					playGameAsPlayerTwo(game);
+				}
             }
         };
         SwingUtilities.invokeLater(run);
     }
+
+	private static void playGameAsPlayerOne(Game game) {
+		boolean gameOver = false;
+		while (!gameOver) {
+			gameOver = takeMyTurn(game);
+			if (gameOver) {
+				break;
+			}
+			gameOver = partnerTakeTurn(game);
+		}
+
+		//TODO DELETE CODE WITHIN STARS and end game properly
+		/***/
+		System.out.println("Game over!");
+		System.exit(0);
+		/***/
+	}
+
+	private static void playGameAsPlayerTwo(Game game) {
+		boolean gameOver = false;
+		while (!gameOver) {
+			gameOver = partnerTakeTurn(game);
+			if (gameOver) {
+				break;
+			}
+			gameOver = takeMyTurn(game);
+		}
+
+		//TODO DELETE CODE WITHIN STARS and end game properly
+		/***/
+		System.out.println("Game over!");
+		System.exit(0);
+		/***/
+	}
+
+	private static boolean takeMyTurn(Game game) {
+		//TODO DELETE CODE WITHIN STARS and fill out what you do during a turn here
+		/***/
+		System.out.println("Continue for you?");
+		Scanner scanner = new Scanner(System.in);
+		String in = scanner.nextLine();
+		if (in.trim().equals("0")) {
+			return true;
+		}
+		/***/
+
+		return false; //return false if game should continue
+	}
+
+	private static boolean partnerTakeTurn(Game game) {
+		//TODO DELETE CODE WITHIN STARS and fill out receiving partner's turn information here
+		/***/
+		System.out.println("Continue for partner?");
+		Scanner scanner = new Scanner(System.in);
+		String in = scanner.nextLine();
+		if (in.trim().equals("0")) {
+			return true;
+		}
+		/***/
+
+		return false; //return false if game should continue
+	}
 
 	private static void startServerConnection(Game game) {
 		// Initialize the server connection
