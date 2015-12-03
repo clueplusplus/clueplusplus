@@ -75,7 +75,9 @@ public class SocketServerConnection implements Runnable{
 				}
 				else if(messageType.compareTo("StartGame") == 0)
 				{
-					//TODO: Check that this is the first character. If so start the game.
+					//Check that this is the first character. If so start the game.
+					// Skipping the check.
+					server.processStartGame(this);
 				}
 				else if(messageType.compareTo("MakeMove") == 0)
 				{
@@ -105,11 +107,11 @@ public class SocketServerConnection implements Runnable{
 					String room = in.readString();
 					String weapon = in.readString();
 					
-					//TODO: Process. Player might win, might lose. Tell everyone.
+					server.processAccusation(this, character, room, weapon);
 				}
 				else if(messageType.compareTo("EndTurn") == 0)
 				{
-					//TODO: Start the next players turn.
+					server.processEndTurn(this);
 				}
 				else
 				{
@@ -123,8 +125,6 @@ public class SocketServerConnection implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	public synchronized void sendYourFirstPlayer()

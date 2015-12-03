@@ -17,7 +17,7 @@ public class SocketServer implements Runnable
 	private boolean running = false;
 	
 	// Game Management Things
-	int platersTurn = 0;	// An index into the array below to keep track of turns.
+	int playersTurn = -1;	// An index into the array below to keep track of turns.
 	ArrayList<PlayerSeat> seats = new ArrayList<PlayerSeat>(); 
 	
 	// Suggestion Round Info
@@ -196,6 +196,61 @@ public class SocketServer implements Runnable
 		}			
 	}
 	
+	public synchronized void processAccusation(SocketServerConnection c, String character, String room, String weapon)
+	{
+		int accusingPlayerSeat = getPlayerSeat(c);
+		
+		// TODO: Figure out if cards are correct
+		boolean correct = false;
+
+		sendAccusationMade(c.characterName, character, room, weapon, correct);
+		
+		if(correct)
+		{
+			sendEndGame(c.characterName + " guessed correctly!");
+			
+			// TODO: Close down gracefully.
+		}
+		else
+		{
+			seats.get(accusingPlayerSeat).playerIsStillInGame = false;
+		}
+	}
+	
+	public synchronized void processStartGame(SocketServerConnection c)
+	{
+		//TODO: Shuffle and distribute cards.
+		
+		// Start the game!
+		sendStartGame();
+		
+		// Start the next turn. Perhaps starting the game is redundant.
+		startNextTurn();
+	}
+	
+	public synchronized void startNextTurn()
+	{
+		playersTurn++;
+		
+		if(playersTurn == seats.size()) playersTurn = 0;
+		
+		if(seats.get(playersTurn).seatTaken && seats.get(playersTurn).playerIsStillInGame)
+		{
+			sendStartTurn(seats.get(playersTurn).characterName);
+		}
+		else
+		{
+			// Easier than a loop, better not all lose. Make that check when someone loses.
+			startNextTurn();
+		}
+		
+	}
+	
+	public synchronized void processEndTurn(SocketServerConnection c)
+	{
+		startNextTurn();
+	}
+	
 	// -----------------------Messages-----------------------------
 	
 	public synchronized void sendStartGame()
@@ -269,8 +324,14 @@ public class SocketServer implements Runnable
 			String accusationCharacter,
 			String accusationRoom,
 			String accusationWeapon,
-			String accuracy)
+			boolean correct)
 	{
+		String accuracy;
+		if(correct)
+			accuracy = "correct";
+		else
+			accuracy = "incorrect";
+		
 		synchronized(connections)
 		{
 			for(SocketServerConnection c : connections)
