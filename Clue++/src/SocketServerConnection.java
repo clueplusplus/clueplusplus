@@ -19,7 +19,9 @@ public class SocketServerConnection implements Runnable{
 	public boolean firstPlayer = false;
 	
 	public String characterName = null;
-		
+	
+	public ArrayList<Card> cards = new ArrayList<Card>();
+	
 	public SocketServerConnection(SocketServer server)
 	{
 		this.server = server;
@@ -49,8 +51,12 @@ public class SocketServerConnection implements Runnable{
 	{
 		try
 		{
+			// If this is the first person to connect they decide when to start the game.
 			if(firstPlayer)
 				sendYourFirstPlayer();
+			
+			// Tell this person the available characters to choose from
+			sendAvailableCharacterList();
 			
 			// Monitor the connection.
 			while(socket.isConnected())
@@ -127,103 +133,128 @@ public class SocketServerConnection implements Runnable{
 		}
 	}
 	
-	public synchronized void sendYourFirstPlayer()
+	public void sendYourFirstPlayer()
 	{
 		try {
-			out.writeString("YourFirstPlayer");
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("YourFirstPlayer");
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendAvailableCharacterList()
+	public void sendAvailableCharacterList()
 	{
 		try {
 			ArrayList<String> characters = server.getAvailableCharacters();
 			
-			out.writeString("AvailableCharacterList");
-			out.writeInt(characters.size());
-			for(int x=0; x<characters.size(); x++)
+			synchronized(out)
 			{
-				out.writeString(characters.get(x));
-			}						
-			out.flush();
+				out.writeString("AvailableCharacterList");
+				out.writeInt(characters.size());
+				for(int x=0; x<characters.size(); x++)
+				{
+					out.writeString(characters.get(x));
+				}						
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendInvalidCharacter()
+	public void sendInvalidCharacter()
 	{
 		try {
-			out.writeString("InvalidCharacter");
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public synchronized void sendYourCharacter()
-	{
-		try {
-			out.writeString("YourCharacter");
-			out.writeString(characterName);
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	public synchronized void sendYourCards(ArrayList<String> cards)
-	{
-		try {
-			out.writeString("YourCards");
-			out.writeInt(cards.size());
-			for(int x=0; x<cards.size(); x++)
+			synchronized(out)
 			{
-				out.writeString(cards.get(x));
-			}						
-			out.flush();
+				out.writeString("InvalidCharacter");
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendStartGame()
+	public void sendYourCharacter()
 	{
 		try {
-			out.writeString("StartGame");
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("YourCharacter");
+				out.writeString(characterName);
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendStartTurn(String characterWhosTurnItIs)
+	public void sendYourCards()
 	{
 		try {
-			out.writeString("StartTurn");
-			out.writeString(characterWhosTurnItIs);
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("YourCards");
+				out.writeInt(cards.size());
+			
+				for(int x=0; x<cards.size(); x++)
+				{
+					out.writeString(cards.get(x).name);
+				}						
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendNotifyMove(String characterMoving, String location)
+	public void sendStartGame()
 	{
 		try {
-			out.writeString("NotifyMove");
-			out.writeString(characterMoving);
-			out.writeString(location);
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("StartGame");
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendSuggestionNotification(
+	public void sendStartTurn(String characterWhosTurnItIs)
+	{
+		try {
+			synchronized(out)
+			{
+				out.writeString("StartTurn");
+				out.writeString(characterWhosTurnItIs);
+				out.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void sendNotifyMove(String characterMoving, String location)
+	{
+		try {
+			synchronized(out)
+			{
+				out.writeString("NotifyMove");
+				out.writeString(characterMoving);
+				out.writeString(location);
+				out.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void sendSuggestionNotification(
 			String suggestingCharacter,
 			String characterToRespond,
 			String suggestionCharacter,
@@ -231,41 +262,50 @@ public class SocketServerConnection implements Runnable{
 			String suggestionWeapon)
 	{
 		try {
-			out.writeString("SuggestionNotification");
-			out.writeString(suggestingCharacter);
-			out.writeString(characterToRespond);
-			out.writeString(suggestionCharacter);
-			out.writeString(suggestionRoom);
-			out.writeString(suggestionWeapon);
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("SuggestionNotification");
+				out.writeString(suggestingCharacter);
+				out.writeString(characterToRespond);
+				out.writeString(suggestionCharacter);
+				out.writeString(suggestionRoom);
+				out.writeString(suggestionWeapon);
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendForwardResponseToSuggestion(String characterResponding, String card)
+	public void sendForwardResponseToSuggestion(String characterResponding, String card)
 	{
 		try {
-			out.writeString("ForwardResponseToSuggestion");
-			out.writeString(characterResponding);
-			out.writeString(card);			
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("ForwardResponseToSuggestion");
+				out.writeString(characterResponding);
+				out.writeString(card);			
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendSuggestionRoundComplete()
+	public void sendSuggestionRoundComplete()
 	{
 		try {
-			out.writeString("SuggestionRoundComplete");
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("SuggestionRoundComplete");
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendAccusationMade(
+	public void sendAccusationMade(
 			String accusingCharacter,
 			String accusationCharacter,
 			String accusationRoom,
@@ -273,24 +313,30 @@ public class SocketServerConnection implements Runnable{
 			String accuracy)
 	{
 		try {
-			out.writeString("AccusationMade");
-			out.writeString(accusingCharacter);
-			out.writeString(accusationCharacter);
-			out.writeString(accusationRoom);
-			out.writeString(accusationWeapon);
-			out.writeString(accuracy);
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("AccusationMade");
+				out.writeString(accusingCharacter);
+				out.writeString(accusationCharacter);
+				out.writeString(accusationRoom);
+				out.writeString(accusationWeapon);
+				out.writeString(accuracy);
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendEndGame(String why)
+	public void sendEndGame(String why)
 	{
 		try {
-			out.writeString("EndGame");
-			out.writeString(why);
-			out.flush();
+			synchronized(out)
+			{
+				out.writeString("EndGame");
+				out.writeString(why);
+				out.flush();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -4,6 +4,7 @@ import gameboard.ChecklistGUI;
 import gameboard.GameBoardGUI;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -26,6 +27,10 @@ public class Game {
 	public boolean iAmServer = false;
 	public SocketServer socketServer;
 	public SocketClientConnection clientConnection;
+	
+	Character myCharacter;
+	ArrayList<Card> myCards;
+	
 	
 	GameBoardGUI gameBoardGui;
     CardGUI cardGui;

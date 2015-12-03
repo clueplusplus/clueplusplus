@@ -40,7 +40,7 @@ public class SocketClientConnection implements Runnable
 	@Override
 	public void run()
 	{
-		// Note this will keep trying to connect if the connection is broken or never established.
+		// Note this will keep trying to connect until cancelled.
 		while(attemptToConnect)
 		{
 			try
@@ -54,6 +54,7 @@ public class SocketClientConnection implements Runnable
 								
 				// Do the communication.
 				connected = true;
+				attemptToConnect = false; // Do not reconnect if we lose connection.
 				while(socket.isConnected())
 		        {					
 					// Parse messages
@@ -63,7 +64,7 @@ public class SocketClientConnection implements Runnable
 					
 					if(messageType.compareTo("YourFirstPlayer") == 0)
 					{
-						//TODO: Record this. I will need to start the game.
+						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
 					}
 					else if(messageType.compareTo("AvailableCharacterList") == 0)
 					{
@@ -75,60 +76,78 @@ public class SocketClientConnection implements Runnable
 							availableCharacters.add(in.readString());
 						}
 						
-						//TODO: Process available characters. Probably display the options for user to choose.
+						//TODO: Update list of connected players based on missing characters.
 						
+						//TODO: If I don't already have a character selected give me the option to choose one.
+						// There is a small chance we could be in the process of waiting for validation
+						// of a character selection when we get this message. If that happens we don't
+						// want to select another character. The server will not figure this problem out
+						// and we will get 2 seats.
 					}
 					else if(messageType.compareTo("InvalidCharacter") == 0)
 					{
 						// No more reading of message required.
 						
-						//TODO: Notify user the selection was invalid. Show the list again without this option.
+						//TODO: Notify user the selection was invalid. Allow user to choose another one.
 					}
 					else if(messageType.compareTo("YourCharacter") == 0)
 					{
-						String myCharacter = in.readString();
+						// This means the server has validated out choice.
+						String myCharacterName = in.readString();
 						
-						//TODO: Save this data and move on. Save in Game object?
+						// Look up my character on the map and save it for reference.
+						game.myCharacter = game.map.getCharacter(myCharacterName);
 					}
 					else if(messageType.compareTo("YourCards") == 0)
 					{
-						// Get additional message data.
-						ArrayList<String> myCards = new ArrayList<String>();
+						// Get the list of cards
+						game.myCards = new ArrayList<Card>();
 						int count = in.readInt();
 						for(int x=0; x<count; x++)
 						{
-							myCards.add(in.readString());
+							// Look up the card in a reference deck, this will load the type of card and any other data in there.
+							game.myCards.add(Card.findCardInReferenceDeck(in.readString()));
 						}
 						
 						//TODO: Save these cards somewhere? Move to next step of game?						
 					}
 					else if(messageType.compareTo("StartGame") == 0)
 					{
-						//TODO: Start the game!
+						//TODO: Start the game! Make sure gui functions are in gui thread.
 					}
 					else if(messageType.compareTo("StartTurn") == 0)
 					{
+						// Read the character who's turn it is.
 						String character = in.readString();
 						
 						//TODO: Check if character is me, if so start my turn.
+						if(game.myCharacter.name.compareTo(character) == 0)
+						{
+							// Start my turn. Make sure to call gui functions in gui thread.
+						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)
 					{
+						// Get the information about whos turn it is.
 						String character = in.readString();
 						String location = in.readString();
 						
-						//TODO: Update the records.
+						// Update the map.
+						game.map.moveCharacter(character, location);
 					}
 					else if(messageType.compareTo("SuggestionNotification") == 0)
 					{
+						// Additional message data
 						String suggestingCharacter = in.readString();
-						String characterToRespond = in.readString();
-						
+						String characterToRespond = in.readString();						
 						String suggestionCharacter = in.readString();
 						String suggestionRoom = in.readString();
 						String suggestionWeapon = in.readString();
 						
-						//TODO: Log the event. Respond if I am the characterToRespond.
+						//TODO: Log the event. Respond if I am the characterToRespond. Gui functions in gui thread.
+						
+						// Update the map since a character gets moved for this.
+						game.map.moveCharacter(suggestionCharacter, suggestionRoom);
 					}
 					else if(messageType.compareTo("ForwardResponseToSuggestion") == 0)
 					{
@@ -136,27 +155,28 @@ public class SocketClientConnection implements Runnable
 						String card = in.readString(); // May be "NoCard"
 						
 						//TODO: Log the event. May required special handling if I was the suggester.
+						// Gui actions in gui thread.
 					}
 					else if(messageType.compareTo("SuggestionRoundComplete") == 0)
 					{
-						//TODO: Log the event.
+						//TODO: Log the event. May required special handling if I was the suggester. Remember I need to end my own turn.
+						// Make sure gui actions in gui thread.
 					}
 					else if(messageType.compareTo("AccusationMade") == 0)
 					{
-						String accusingCharacter = in.readString();
-						
+						String accusingCharacter = in.readString();						
 						String accusationCharacter = in.readString();
 						String accusationRoom = in.readString();
 						String accusationWeapon = in.readString();
 						String accuracy = in.readString(); // "Correct" or "Incorrect"
 												
-						//TODO: Log the event.
+						//TODO: Log the event. Gui actions in gui thread.
 					}
 					else if(messageType.compareTo("EndGame") == 0)
 					{
 						String reason = in.readString();
 						
-						//TODO: The game is over. Display the reason.
+						//TODO: The game is over. Display the reason. Gui actions in gui thread.
 					}
 					else
 					{
@@ -189,7 +209,6 @@ public class SocketClientConnection implements Runnable
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -206,7 +225,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString(characterName);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}
@@ -217,11 +235,10 @@ public class SocketClientConnection implements Runnable
 			out.writeString("StartGame");
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+		
 	public synchronized void sendMakeMove(String location)
 	{
 		try {
@@ -229,7 +246,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString(location);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -243,7 +259,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString(weapon);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -255,7 +270,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString(card);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -269,7 +283,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString(weapon);
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -280,7 +293,6 @@ public class SocketClientConnection implements Runnable
 			out.writeString("EndTurn");
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	

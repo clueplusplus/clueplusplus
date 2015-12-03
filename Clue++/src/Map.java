@@ -27,7 +27,7 @@ public class Map
 		return null;
 	}
 	
-	public void printMapMovementOptions()
+	public synchronized void printMapMovementOptions()
 	{
 		for(Location l : locations)
 		{
@@ -62,11 +62,11 @@ public class Map
 		locations = new ArrayList<Location>(0);
 		
 		// Grouped into rows
-		Location aa = new Location(1, 1, "Study", 10);
+		Location aa = new Location(1, 1, Location.Study, 10);
 		Location ab = new Location(1, 2, "Hallway (1, 2)", 1);
-		Location ac = new Location(1, 3, "Hall", 10);
+		Location ac = new Location(1, 3, Location.Hall, 10);
 		Location ad = new Location(1, 4, "Hallway (1, 4)", 1);
-		Location ae = new Location(1, 5, "Lounge", 10);
+		Location ae = new Location(1, 5, Location.Lounge, 10);
 		
 		Location ba = new Location(2, 1, "Hallway (2, 1)", 1);
 		//Location bb = new Location(2, 2);
@@ -74,11 +74,11 @@ public class Map
 		//Location bd = new Location(2, 4);
 		Location be = new Location(2, 5, "Hallway (2, 5)", 1);
 		
-		Location ca = new Location(3, 1, "Library", 10);
+		Location ca = new Location(3, 1, Location.Library, 10);
 		Location cb = new Location(3, 2, "Hallway (3, 2)", 1);
-		Location cc = new Location(3, 3, "Billiard Room", 10);
+		Location cc = new Location(3, 3, Location.BilliardRoom, 10);
 		Location cd = new Location(3, 4, "Hallway (3, 4)", 1);
-		Location ce = new Location(3, 5, "Dining Room", 10);
+		Location ce = new Location(3, 5, Location.DiningRoom, 10);
 		
 		Location da = new Location(4, 1, "Hallway (4, 1)", 1);
 		//Location db = new Location(4, 2);
@@ -86,11 +86,11 @@ public class Map
 		//Location dd = new Location(4, 4);
 		Location de = new Location(4, 5, "Hallway (4, 5)", 1);
 		
-		Location ea = new Location(5, 1, "Conservatory", 10);
+		Location ea = new Location(5, 1, Location.Conservatory, 10);
 		Location eb = new Location(5, 2, "Hallway (5, 2)", 1);
-		Location ec = new Location(5, 3, "Ballroom", 10);
+		Location ec = new Location(5, 3, Location.Ballroom, 10);
 		Location ed = new Location(5, 4, "Hallway (5, 4)", 1);
-		Location ee = new Location(5, 5, "Kitchen", 10);
+		Location ee = new Location(5, 5, Location.Kitchen, 10);
 		
 		aa.down = ba;
 		aa.right = ab;

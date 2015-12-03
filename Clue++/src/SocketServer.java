@@ -20,6 +20,9 @@ public class SocketServer implements Runnable
 	int playersTurn = -1;	// An index into the array below to keep track of turns.
 	ArrayList<PlayerSeat> seats = new ArrayList<PlayerSeat>(); 
 	
+	// Murder Scenario
+	ArrayList<Card> murderCards;
+	
 	// Suggestion Round Info
 	int suggestingPlayerSeat;
 	int respondingPlayerSeat;	
@@ -98,7 +101,7 @@ public class SocketServer implements Runnable
 		}
 	}
 	
-	public synchronized ArrayList<String> getAvailableCharacters()
+	public ArrayList<String> getAvailableCharacters()
 	{
 		ArrayList<String> list = new ArrayList<String>();
 	
@@ -113,18 +116,32 @@ public class SocketServer implements Runnable
 		return list;
 	}
 	
-	public synchronized boolean selectCharacter(SocketServerConnection c, String characterName)
+	public boolean selectCharacter(SocketServerConnection c, String characterName)
 	{
 		boolean status = false;
 
-		for(PlayerSeat s : seats)
+		synchronized(seats)
 		{
-			if(s.characterName.compareTo(characterName) == 0)
+			for(PlayerSeat s : seats)
 			{
-				s.client = c;
-				s.seatTaken = true;
-				status = true;
-				break;
+				// Find the seat that matches that character.
+				if(s.characterName.compareTo(characterName) == 0)
+				{
+					// Check if another player took that seat already.
+					if(!s.seatTaken)
+					{
+						// Assign this person to this character.
+						s.playerConnection = c;
+						s.seatTaken = true;
+						status = true;
+						
+						// Update everyone about the new character selection.
+						sendAvailableCharacterList();
+					}
+					
+					// End the loop
+					break;
+				}
 			}
 		}
 		
@@ -135,10 +152,11 @@ public class SocketServer implements Runnable
 	{
 		for(int x=0; x<seats.size(); x++)
 		{
-			if(seats.get(x).client == c) return x; 
+			if(seats.get(x).playerConnection == c) return x; 
 		}
 		
-		// This better not happen.		
+		// This better not happen.
+		System.out.println("Error in getPlayerSeat");
 		return -1;
 	}
 	
@@ -220,11 +238,33 @@ public class SocketServer implements Runnable
 	public synchronized void processStartGame(SocketServerConnection c)
 	{
 		//TODO: Shuffle and distribute cards.
+		ArrayList<Card> deck = Card.getFullDeck();
 		
-		// Start the game!
+		// Get the 3 cards for the murder.
+		murderCards = new ArrayList<Card>();
+		murderCards.add(Card.removeTypeOfCard(deck, Card.CharacterType));
+		murderCards.add(Card.removeTypeOfCard(deck, Card.LocationType));
+		murderCards.add(Card.removeTypeOfCard(deck, Card.WeaponType));		
+		
+		// Assign cards to the players.
+		int x = -1;
+		while(!deck.isEmpty())
+		{
+			x++;
+			if(x == seats.size())
+				x = 0;
+			
+			if(seats.get(x).seatTaken)
+				seats.get(x).playerConnection.cards.add(deck.remove(deck.size()-1));
+		}
+		
+		// Send out the cards to the clients
+		sendCardList();		
+		
+		// Start the game! Perhaps this step is redundant.
 		sendStartGame();
 		
-		// Start the next turn. Perhaps starting the game is redundant.
+		// Start the next turn.
 		startNextTurn();
 	}
 	
@@ -260,6 +300,26 @@ public class SocketServer implements Runnable
 			for(SocketServerConnection c : connections)
 			{
 				c.sendStartGame();
+			}
+		}
+	}
+	public synchronized void sendAvailableCharacterList()
+	{
+		synchronized(connections)
+		{
+			for(SocketServerConnection c : connections)
+			{
+				c.sendAvailableCharacterList();
+			}
+		}
+	}
+	public synchronized void sendCardList()
+	{
+		synchronized(connections)
+		{
+			for(SocketServerConnection c : connections)
+			{
+				c.sendYourCards();
 			}
 		}
 	}

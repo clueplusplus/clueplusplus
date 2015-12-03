@@ -23,6 +23,16 @@ public class Location
 	// People in the location
 	ArrayList<Character> occupants = new ArrayList<Character>(0);
 	
+	static String Study = "Study";
+	static String Hall = "Hall";
+	static String Lounge= "Lounge";
+	static String Library = "Library";
+	static String BilliardRoom = "Billiard Room";
+	static String DiningRoom = "Dining Room";
+	static String Conservatory = "Conservatory";
+	static String Ballroom = "Ballroom";
+	static String Kitchen = "Kitchen";
+	
 	Location(int row, int col, String name, int capacity)
 	{
 		this.row = row;
