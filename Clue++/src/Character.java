@@ -5,6 +5,13 @@ public class Character
 	
 	Location location;
 	
+	static String missScarlet =	"Miss Scarlet";
+	static String profPlum = "Professor Plum";
+	static String mrsPeacock = "Mrs. Peacock";
+	static String revGreen = "Reverend Green";
+	static String colMustard = "Colonel Mustard";
+	static String mrsWhite = "Mrs. White";	
+	
 	Character(String name, Location location)
 	{
 		this.name = name;

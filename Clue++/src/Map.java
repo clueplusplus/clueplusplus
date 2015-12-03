@@ -5,7 +5,7 @@ public class Map
 	ArrayList<Location> locations;
 	ArrayList<Character> characters;
 	
-	public Location getLocation(String name)
+	public synchronized Location getLocation(String name)
 	{
 		for(Location l : locations)
 		{
@@ -16,7 +16,7 @@ public class Map
 		return null;
 	}
 	
-	public Location getRoom(int row, int col)
+	public synchronized Location getRoom(int row, int col)
 	{
 		for(Location l : locations)
 		{
@@ -35,7 +35,7 @@ public class Map
 		}
 	}
 	
-	public Character getCharacter(String name)
+	public synchronized Character getCharacter(String name)
 	{
 		for(Character c : characters)
 		{
@@ -46,7 +46,7 @@ public class Map
 		return null;
 	}
 	
-	public void moveCharacter(String characterName, String locationName)
+	public synchronized void moveCharacter(String characterName, String locationName)
 	{
 		Character c = getCharacter(characterName);
 		Location l = getLocation(locationName);
@@ -195,24 +195,24 @@ public class Map
 		// Generate the characters and place on the map.
 		characters = new ArrayList<Character>(0);
 		
-		Character a = new Character("Miss Scarlet", eb);
+		Character a = new Character(Character.missScarlet, eb);
 		eb.occupants.add(a);
 		
-		Character b = new Character("Professor Plum", de);
+		Character b = new Character(Character.profPlum, de);
 		de.occupants.add(b);
 		
-		Character c = new Character("Mrs. Peacock", be);
+		Character c = new Character(Character.mrsPeacock, be);
 		be.occupants.add(c);
 		
-		Character d = new Character("Reverend Green", ad);
+		Character d = new Character(Character.revGreen, ad);
 		ad.occupants.add(d);
 		
-		Character e = new Character("Colonel Mustard", da);
+		Character e = new Character(Character.colMustard, da);
 		da.occupants.add(e);
 		
-		Character f = new Character("Mrs. White", ab);
+		Character f = new Character(Character.mrsWhite, ab);
 		ab.occupants.add(f);
-		
+				
 		characters.add(a);
 		characters.add(b);
 		characters.add(c);

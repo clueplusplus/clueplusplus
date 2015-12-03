@@ -17,8 +17,9 @@ public class SocketServerConnection implements Runnable{
 	private SocketServer server;
 		
 	public boolean firstPlayer = false;
-	public String character = "invalid";
 	
+	public String characterName = null;
+		
 	public SocketServerConnection(SocketServer server)
 	{
 		this.server = server;
@@ -63,8 +64,14 @@ public class SocketServerConnection implements Runnable{
 				{
 					String characterName = in.readString();
 					
-					//TODO: Check that this character selection is still valid. If so save the data for this user.
-					character = characterName; // Assuming it's valid.
+					if(server.selectCharacter(this, characterName))
+					{
+						this.characterName = characterName;
+					}
+					else
+					{
+						sendInvalidCharacter();
+					}
 				}
 				else if(messageType.compareTo("StartGame") == 0)
 				{
@@ -74,9 +81,10 @@ public class SocketServerConnection implements Runnable{
 				{
 					String location = in.readString();
 					
-					//TODO: Whatever is required internally.
+					// Since the server doesn't care about player location this data should just be forwarded on.
 					
-					//TODO: Update other users with this information
+					//Update other users with this information
+					server.sendNotifyMove(characterName, location);
 				}
 				else if(messageType.compareTo("MakeSuggestion") == 0)
 				{
@@ -84,13 +92,12 @@ public class SocketServerConnection implements Runnable{
 					String room = in.readString();
 					String weapon = in.readString();
 					
-					//TODO: Figure out who should respond and send this data out to everyone.
+					server.processSuggestion(this, character, room, weapon);
 				}
 				else if(messageType.compareTo("RespondToSuggestion") == 0)
 				{
-					String card = in.readString(); // May = "NoCard"
-					
-					//TODO: Process and tell all users.
+					String card = in.readString(); // May equal "NoCard"
+					server.processSuggestionResponse(this, card);
 				}
 				else if(messageType.compareTo("MakeAccusation") == 0)
 				{
@@ -130,9 +137,11 @@ public class SocketServerConnection implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	public synchronized void sendAvailableCharacterList(ArrayList<String> characters)
+	public synchronized void sendAvailableCharacterList()
 	{
 		try {
+			ArrayList<String> characters = server.getAvailableCharacters();
+			
 			out.writeString("AvailableCharacterList");
 			out.writeInt(characters.size());
 			for(int x=0; x<characters.size(); x++)
@@ -159,7 +168,7 @@ public class SocketServerConnection implements Runnable{
 	{
 		try {
 			out.writeString("YourCharacter");
-			out.writeString(character);
+			out.writeString(characterName);
 			out.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

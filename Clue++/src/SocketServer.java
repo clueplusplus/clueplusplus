@@ -16,11 +16,25 @@ public class SocketServer implements Runnable
 	
 	private boolean running = false;
 	
-	private Game game;
+	// Game Management Things
+	int platersTurn = 0;	// An index into the array below to keep track of turns.
+	ArrayList<PlayerSeat> seats = new ArrayList<PlayerSeat>(); 
+	
+	// Suggestion Round Info
+	int suggestingPlayerSeat;
+	int respondingPlayerSeat;	
+	String suggestionCharacter;
+	String suggestionRoom;
+	String suggestionWeapon;
 	
 	public SocketServer()
 	{
-		game = Game.getInstance();
+		seats.add(new PlayerSeat(Character.colMustard));
+		seats.add(new PlayerSeat(Character.mrsWhite));
+		seats.add(new PlayerSeat(Character.revGreen));
+		seats.add(new PlayerSeat(Character.mrsPeacock));
+		seats.add(new PlayerSeat(Character.profPlum));
+		seats.add(new PlayerSeat(Character.missScarlet));		
 	}
 	
 	public void startServer(int port)
@@ -67,7 +81,7 @@ public class SocketServer implements Runnable
 		running = false;
 	}
 	
-	public boolean isRunning()
+	public synchronized boolean isRunning()
 	{
 		return running;
 	}
@@ -83,6 +97,106 @@ public class SocketServer implements Runnable
 			e.printStackTrace();
 		}
 	}
+	
+	public synchronized ArrayList<String> getAvailableCharacters()
+	{
+		ArrayList<String> list = new ArrayList<String>();
+	
+		synchronized(seats)
+		{
+			for(PlayerSeat s : seats)
+			{
+				if(!s.seatTaken) list.add(s.characterName);
+			}
+		}
+		
+		return list;
+	}
+	
+	public synchronized boolean selectCharacter(SocketServerConnection c, String characterName)
+	{
+		boolean status = false;
+
+		for(PlayerSeat s : seats)
+		{
+			if(s.characterName.compareTo(characterName) == 0)
+			{
+				s.client = c;
+				s.seatTaken = true;
+				status = true;
+				break;
+			}
+		}
+		
+		return status;
+	}
+	
+	private synchronized int getPlayerSeat(SocketServerConnection c)
+	{
+		for(int x=0; x<seats.size(); x++)
+		{
+			if(seats.get(x).client == c) return x; 
+		}
+		
+		// This better not happen.		
+		return -1;
+	}
+	
+	public synchronized void processSuggestion(SocketServerConnection c, String character, String room, String weapon)
+	{
+		suggestingPlayerSeat = getPlayerSeat(c);
+		respondingPlayerSeat = suggestingPlayerSeat + 1;
+		suggestionCharacter = character; 
+		suggestionRoom = room;
+		suggestionWeapon = weapon;
+		
+		sendNextSuggestionResponseRequest();
+	}
+	
+	public synchronized void sendNextSuggestionResponseRequest()
+	{
+		while(respondingPlayerSeat != suggestingPlayerSeat)
+		{
+			if(respondingPlayerSeat == seats.size())
+			{
+				suggestingPlayerSeat = 0;
+			}
+			else 
+			{
+				if(seats.get(respondingPlayerSeat).seatTaken)
+				{
+					sendSuggestionNotification(	seats.get(suggestingPlayerSeat).characterName, 
+												seats.get(respondingPlayerSeat).characterName);				
+				}
+				else
+				{
+					respondingPlayerSeat++;
+				}
+			}
+		}
+		
+		if(respondingPlayerSeat == suggestingPlayerSeat)
+		{
+			sendSuggestionRoundComplete();
+		}
+	}
+	
+	public synchronized void processSuggestionResponse(SocketServerConnection c, String card)
+	{
+		sendForwardResponseToSuggestion(c.characterName, card);
+		
+		if(card.compareTo("NoCard") == 0)
+		{
+			respondingPlayerSeat++;
+			sendNextSuggestionResponseRequest();
+		}
+		else
+		{
+			sendSuggestionRoundComplete();
+		}			
+	}
+	
+	// -----------------------Messages-----------------------------
 	
 	public synchronized void sendStartGame()
 	{
@@ -116,10 +230,7 @@ public class SocketServer implements Runnable
 	}
 	public synchronized void sendSuggestionNotification(
 			String suggestingCharacter,
-			String characterToRespond,
-			String suggestionCharacter,
-			String suggestionRoom,
-			String suggestionWeapon)
+			String characterToRespond)
 	{
 		synchronized(connections)
 		{
