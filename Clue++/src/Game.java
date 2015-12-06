@@ -5,11 +5,11 @@ import gameboard.GameBoardGUI;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * Kicks off the start of the game. Holds important data.
@@ -90,10 +90,8 @@ public class Game {
 					startClientConnection(game, frame);
 				}
 
-				//TODO set up game: distribute cards to player one and player two, put in folder, choose characters, etc.
-
 				if (game.iAmServer) {
-					playGameAsPlayerOne(game);
+					playGameAsPlayerOne(game, frame);
 				} else {
 					playGameAsPlayerTwo(game);
 				}
@@ -102,7 +100,46 @@ public class Game {
         SwingUtilities.invokeLater(run);
     }
 
-	private static void playGameAsPlayerOne(Game game) {
+	private static void playGameAsPlayerOne(Game game, JFrame frame) {
+		JRadioButton mustard = new JRadioButton("Colonel Mustard", true);
+		JRadioButton scarlet = new JRadioButton("Miss Scarlet", false);
+		JRadioButton green = new JRadioButton("Mr. Green", false);
+		JRadioButton peacock = new JRadioButton("Mrs. Peacock", false);
+		JRadioButton white = new JRadioButton("Mrs. White", false);
+		JRadioButton plum = new JRadioButton("Professor Plum", false);
+
+		List<JRadioButton> characters = Arrays.asList(mustard, scarlet, green, peacock, white, plum);
+
+		ButtonGroup buttonGroup = new ButtonGroup();
+		for(JRadioButton radioButton : characters) {
+			buttonGroup.add(radioButton);
+		}
+
+		JPanel characterSelectionPanel = new JPanel();
+		for(JRadioButton radioButton : characters) {
+			characterSelectionPanel.add(radioButton);
+		}
+
+		ImageIcon characterPieceIcon = new ImageIcon("/Users/marinachilders/clueplusplus/Clue++/src/resources/misc_images/clue_game_piece.png");
+
+		Object[] option = {"Okay"};
+		int choice = JOptionPane.showOptionDialog(frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, characterPieceIcon, option, option[0]);
+
+		String selectedCharacter = "Colonel Mustard";
+
+		if (choice == 0) {
+			for (JRadioButton radioButton : characters) {
+				if (radioButton.isSelected()) {
+					selectedCharacter = radioButton.getText();
+				}
+			}
+		}
+
+		System.out.println("Selected: " + selectedCharacter);
+
+		//TODO distribute cards to players
+		//TODO distribute cards to solution folder
+
 		boolean gameOver = false;
 		while (!gameOver) {
 			gameOver = takeMyTurn(game);
@@ -120,6 +157,10 @@ public class Game {
 	}
 
 	private static void playGameAsPlayerTwo(Game game) {
+		//TODO choose a character
+		//TODO distribute cards to players
+		//TODO distribute cards to solution folder
+
 		boolean gameOver = false;
 		while (!gameOver) {
 			gameOver = partnerTakeTurn(game);
