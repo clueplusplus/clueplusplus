@@ -120,7 +120,7 @@ public class Game {
 			characterSelectionPanel.add(radioButton);
 		}
 
-		ImageIcon characterPieceIcon = new ImageIcon("/Users/marinachilders/clueplusplus/Clue++/src/resources/misc_images/clue_game_piece.png");
+		ImageIcon characterPieceIcon = new ImageIcon(game.getClass().getResource("resources/misc_images/clue_game_piece.png"));
 
 		Object[] option = {"Okay"};
 		int choice = JOptionPane.showOptionDialog(frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, characterPieceIcon, option, option[0]);
