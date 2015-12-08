@@ -73,9 +73,13 @@ public class SocketServerConnection implements Runnable{
 					if(server.selectCharacter(this, characterName))
 					{
 						this.characterName = characterName;
+						
+						// Send the message back to the client that this is a valid choice.
+						sendYourCharacter();
 					}
 					else
 					{
+						// This is no longer a valid choice.
 						sendInvalidCharacter();
 					}
 				}
