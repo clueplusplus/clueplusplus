@@ -53,8 +53,10 @@ public class SocketServerConnection implements Runnable{
 		try
 		{
 			// If this is the first person to connect they decide when to start the game.
+			// AM: The server side assigns the player who starts the server as the first player
+			// AM: Send message to client that it is first player 
 			if(firstPlayer)
-				sendYourFirstPlayer();
+				sendYouAreFirstPlayer();
 			
 			// Tell this person the available characters to choose from
 			sendAvailableCharacterList();
@@ -138,12 +140,12 @@ public class SocketServerConnection implements Runnable{
 		}
 	}
 	
-	public void sendYourFirstPlayer()
+	public void sendYouAreFirstPlayer()
 	{
 		try {
 			synchronized(out)
 			{
-				out.writeString("YourFirstPlayer");
+				out.writeString("YourAreFirstPlayer");
 				out.flush();
 			}
 		} catch (IOException e) {

@@ -33,6 +33,8 @@ public class SocketServer implements Runnable
 	
 	public SocketServer()
 	{
+		// Keeps track of what player 'seats'/characters have been taken
+		// PlayerSeat also stores reference to the SocketServerConnection object
 		seats.add(new PlayerSeat(Character.colMustard));
 		seats.add(new PlayerSeat(Character.mrsWhite));
 		seats.add(new PlayerSeat(Character.revGreen));

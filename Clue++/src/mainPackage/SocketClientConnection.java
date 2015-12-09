@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import javax.swing.*;
 
 
 public class SocketClientConnection implements Runnable
@@ -23,6 +24,7 @@ public class SocketClientConnection implements Runnable
 	
 	public volatile boolean connected = false;	
 	public volatile boolean attemptToConnect = true;
+	public boolean comLock = false; // Added this communication lock to prevent flooding the server with the same query while waiting for a response
 	
 	public SocketClientConnection()
 	{
@@ -57,18 +59,18 @@ public class SocketClientConnection implements Runnable
 				connected = true;
 				attemptToConnect = false; // Do not reconnect if we lose connection.
 				while(socket.isConnected())
-		        {					
+		        {	
 					// Parse messages
 					String messageType = in.readString();
 					
 					System.out.println("Received: " + messageType);
 					
-					if(messageType.compareTo("YourFirstPlayer") == 0)
+					// Changing the order here. First pick character
+					if(messageType.compareTo("AvailableCharacterList") == 0 && !comLock)
 					{
-						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
-					}
-					else if(messageType.compareTo("AvailableCharacterList") == 0)
-					{
+						// Lock this until we get a response whether valid or invalid -- should probably add a timeout for the lock
+						comLock = true;
+						
 						// Get additional message data.
 						ArrayList<String> availableCharacters = new ArrayList<String>();
 						int count = in.readInt();
@@ -76,6 +78,30 @@ public class SocketClientConnection implements Runnable
 						{
 							availableCharacters.add(in.readString());
 						}
+						
+						JRadioButton[] buttons = new JRadioButton[availableCharacters.size()];
+						
+						int idx=0;
+						for (String character : availableCharacters) {
+							System.out.println(character);
+							buttons[idx] = new JRadioButton(character, idx==0);
+							idx++;
+						} 
+						
+						ButtonGroup buttonGroup = new ButtonGroup();
+						for(JRadioButton button : buttons) {
+							buttonGroup.add(button);
+						}
+						
+						JPanel characterSelectionPanel = new JPanel();
+						for(JRadioButton button : buttons) {
+							characterSelectionPanel.add(button);
+						}
+
+						Object[] option = {"Okay"};
+						int choice = JOptionPane.showOptionDialog(game.frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, option, option[0]);
+						
+						this.sendSelectCharacter(availableCharacters.get(choice));
 						
 						//TODO: Update list of connected players based on missing characters.
 						
@@ -85,10 +111,16 @@ public class SocketClientConnection implements Runnable
 						// want to select another character. The server will not figure this problem out
 						// and we will get 2 seats.
 					}
+					
+					else if(messageType.compareTo("YouAreFirstPlayer") == 0)
+					{
+						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
+						
+					}
 					else if(messageType.compareTo("InvalidCharacter") == 0)
 					{
 						// No more reading of message required.
-						
+					    comLock = false;	
 						//TODO: Notify user the selection was invalid. Allow user to choose another one.
 					}
 					else if(messageType.compareTo("YourCharacter") == 0)
