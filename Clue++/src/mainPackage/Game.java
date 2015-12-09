@@ -68,7 +68,7 @@ public class Game {
             	Game game = Game.getInstance().initializeGUIComponents();
 				JFrame frame = createGameJFrame(game);
                 
-                // Is this going to run as the server?                
+                // TODO Check if a game server already exists, what happens if two players choose to be servers?                
                 Object[] options = {"Server", "Client"};
 				int choice = JOptionPane.showOptionDialog(frame,
 						"Is the server or a client?",
@@ -92,9 +92,9 @@ public class Game {
 				}
 
 				// Just some test code. Delete Eventually.
-				JOptionPane.showConfirmDialog(frame, "When you click OK I will move pieces on the board as a test.");
-				game.map.moveCharacter(Character.missScarlet, Location.BilliardRoom);
-				game.map.moveCharacter(Character.colMustard, Location.BilliardRoom);
+				//JOptionPane.showConfirmDialog(frame, "When you click OK I will move pieces on the board as a test.");
+				//game.map.moveCharacter(Character.missScarlet, Location.BilliardRoom);
+				//game.map.moveCharacter(Character.colMustard, Location.BilliardRoom);
 				
 				// TODO: Start selecting characters and whatnot.
 				/*
@@ -122,111 +122,6 @@ public class Game {
         });
     	
     }
-
-    // TODO: Marina to delete or modify?
-	private static void playGameAsPlayerOne(Game game, JFrame frame) {
-		JRadioButton mustard = new JRadioButton("Colonel Mustard", true);
-		JRadioButton scarlet = new JRadioButton("Miss Scarlet", false);
-		JRadioButton green = new JRadioButton("Mr. Green", false);
-		JRadioButton peacock = new JRadioButton("Mrs. Peacock", false);
-		JRadioButton white = new JRadioButton("Mrs. White", false);
-		JRadioButton plum = new JRadioButton("Professor Plum", false);
-		
-		List<JRadioButton> characters = Arrays.asList(mustard, scarlet, green, peacock, white, plum);
-
-		ButtonGroup buttonGroup = new ButtonGroup();
-		for(JRadioButton radioButton : characters) {
-			buttonGroup.add(radioButton);
-		}
-
-		JPanel characterSelectionPanel = new JPanel();
-		for(JRadioButton radioButton : characters) {
-			characterSelectionPanel.add(radioButton);
-		}
-
-		
-		//ImageIcon characterPieceIcon = new ImageIcon(game.getClass().getResource("resources/misc_images/clue_game_piece.png"));
-
-		Object[] option = {"Okay"};
-		//int choice = JOptionPane.showOptionDialog(frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, characterPieceIcon, option, option[0]);
-		int choice = 1;
-		
-		String selectedCharacter = "Colonel Mustard";
-
-		if (choice == 0) {
-			for (JRadioButton radioButton : characters) {
-				if (radioButton.isSelected()) {
-					selectedCharacter = radioButton.getText();
-				}
-			}
-		}
-
-		System.out.println("Selected: " + selectedCharacter);
-		
-		boolean gameOver = false;
-		while (!gameOver) {
-			gameOver = takeMyTurn(game);
-			if (gameOver) {
-				break;
-			}
-			gameOver = partnerTakeTurn(game);
-		}
-
-		//TODO DELETE CODE WITHIN STARS and end game properly
-		/***/
-		System.out.println("Game over!");
-		System.exit(0);
-		/***/
-	}
-
-	private static void playGameAsPlayerTwo(Game game) {
-		//TODO choose a character
-		//TODO distribute cards to players
-		//TODO distribute cards to solution folder
-
-		boolean gameOver = false;
-		while (!gameOver) {
-			gameOver = partnerTakeTurn(game);
-			if (gameOver) {
-				break;
-			}
-			gameOver = takeMyTurn(game);
-		}
-
-		//TODO DELETE CODE WITHIN STARS and end game properly
-		/***/
-		System.out.println("Game over!");
-		System.exit(0);
-		/***/
-	}
-
-	private static boolean takeMyTurn(Game game) {
-		//TODO DELETE CODE WITHIN STARS and fill out what you do during a turn here
-		/***/
-		System.out.println("Continue for you?");
-		Scanner scanner = new Scanner(System.in);
-		String in = scanner.nextLine();
-		if (in.trim().equals("0")) {
-			return true;
-		}
-		/***/
-
-		return false; //return false if game should continue
-	}
-
-	private static boolean partnerTakeTurn(Game game) {
-		//TODO DELETE CODE WITHIN STARS and fill out receiving partner's turn information here
-		/***/
-		System.out.println("Continue for partner?");
-		Scanner scanner = new Scanner(System.in);
-		String in = scanner.nextLine();
-		if (in.trim().equals("0")) {
-			return true;
-		}
-		/***/
-
-		return false; //return false if game should continue
-	}
 
 	private static void startServerConnection(Game game) {
 		// Initialize the server connection
