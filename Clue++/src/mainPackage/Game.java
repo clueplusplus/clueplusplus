@@ -20,25 +20,33 @@ public class Game {
     /**
      * @param args
      */
+	// To make sure we can get access to this whenever. Probably not the cleanest idea.
 	static private Game instance = null;
 	
+	// Connection information.
 	public String ipAddr = "localhost";
 	public int port = 1234;
-	
-	public boolean iAmServer = false;
 	public SocketServer socketServer;
 	public SocketClientConnection clientConnection;
 	
+	// This is probably not especially usefull after startup. We should ignore it most of the time.
+	public boolean iAmServer = false;
+	
+	// Traits assigned to my person
 	Character myCharacter;
 	ArrayList<Card> myCards;
 	
+	// A reference deck with all possible cards.
+	public Deck deck = new Deck();
 	
+	// The mapping of rooms and players.
+	public Map map = new Map();	
+	
+	// GUI Stuff
 	GameBoardGUI gameBoardGui;
     CardGUI cardGui;
     ChecklistGUI checklistGui;
     JFrame frame;
-	
-    public Map map = new Map();
     
 	private Game() {
 		
@@ -95,6 +103,17 @@ public class Game {
 				//JOptionPane.showConfirmDialog(frame, "When you click OK I will move pieces on the board as a test.");
 				//game.map.moveCharacter(Character.missScarlet, Location.BilliardRoom);
 				//game.map.moveCharacter(Character.colMustard, Location.BilliardRoom);
+				
+				// Load some random cards to test the GUI.
+				JOptionPane.showConfirmDialog(frame, "When you click OK I will load some cards as a test.");
+				ArrayList<Card> myCards = new ArrayList<Card>();				
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.CharacterType));
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.CharacterType));
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.LocationType));
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.LocationType));
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
+				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
+				game.cardGui.loadCardImages(myCards);
 				
 				// TODO: Start selecting characters and whatnot.
 				/*

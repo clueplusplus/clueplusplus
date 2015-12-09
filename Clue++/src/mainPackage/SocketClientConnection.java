@@ -139,7 +139,7 @@ public class SocketClientConnection implements Runnable
 						for(int x=0; x<count; x++)
 						{
 							// Look up the card in a reference deck, this will load the type of card and any other data in there.
-							game.myCards.add(Card.findCardInReferenceDeck(in.readString()));
+							game.myCards.add(game.deck.findCard(in.readString()));
 						}
 						
 						//TODO: Save these cards somewhere? Move to next step of game?						
