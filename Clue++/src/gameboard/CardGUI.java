@@ -21,11 +21,17 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import mainPackage.Card;
+import mainPackage.Game;
+
 /**
  * GUI to display the cards.
  */
 public class CardGUI {
 	private final JPanel gui = new JPanel();
+	
+	JLabel[] labels = new JLabel[8];
+	
 	private JPanel cardBoard;
 	private final List<String> cardImagePaths = new ArrayList<String>(
 			Arrays.asList("Characters/ColonelMustard", "Characters/MissScarlet", "Characters/MrGreen",
@@ -52,20 +58,23 @@ public class CardGUI {
      * Initializes the GUI.
      */
 	private void initializeGui() {
-		// TODO: pull correct cards.
-		List<String> myCards = getRandom10();
-		displayCards(myCards);
-	}
-
-	/**
-	 * Displays the cards on the board.
-	 * 
-	 * @param myCards The cards to display.
-	 */
-	private void displayCards(List<String> myCards) {
+				
 		createCardBoard();
 		setCardBoardScope();
-		setupCardBoard(myCards);
+		setupCardBoard();
+		
+		// Load dummy placeholders for cards.
+		ArrayList<Card> myCards = new ArrayList<Card>();				
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		loadCardImages(myCards);
+		
 	}
 	
 	 /**
@@ -81,18 +90,24 @@ public class CardGUI {
      * Creates the card board.
      */
 	private void createCardBoard() {
-		cardBoard = new JPanel(new GridLayout(1, 10)); 
+		cardBoard = new JPanel(new GridLayout(1, 10));
 	}
 
 	/**
 	 * Sets up the card board to have the proper images.
 	 */
-	private void setupCardBoard(List<String> cards) {
-		for (String card : cards) {
+	private void setupCardBoard() {
+		for(int x=0; x<labels.length; x++) {
 			// Create a button with the correct image.
-			JLabel label = new JLabel();
-			label.setIcon(new ImageIcon(getImage(card).getScaledInstance(160, 200, BufferedImage.TYPE_INT_ARGB)));
-			cardBoard.add(label);
+			labels[x] = new JLabel();
+			cardBoard.add(labels[x]);
+		}
+	}
+	
+	public void loadCardImages(List<Card> cards) {
+		for(int x=0; x<cards.size(); x++) {
+			// Create a button with the correct image.
+			labels[x].setIcon(new ImageIcon(getImage(cards.get(x)).getScaledInstance(160, 200, BufferedImage.TYPE_INT_ARGB)));
 		}
 	}
 
@@ -102,9 +117,9 @@ public class CardGUI {
 	 * @param card The card to display.
 	 * @return The image.
 	 */
-	private Image getImage(String card) {
+	private Image getImage(Card card) {
 		// Load the correct input stream.
-		InputStream cardStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Cards/" + card + ".jpg");
+		InputStream cardStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Cards/" + card.filePath + ".jpg");
         BufferedImage cardImage = null;
         try {
         	// Read the image.
@@ -119,16 +134,5 @@ public class CardGUI {
             }
         }
 		return cardImage;
-	}
-
-	/**
-	 * Temp method to choose cards.
-	 * 
-	 * @return The list of card names.
-	 */
-	private List<String> getRandom10() {
-		List<String> shuffledCardPaths = cardImagePaths;
-		Collections.shuffle(shuffledCardPaths);
-		return shuffledCardPaths.subList(0, 7);
 	}
 }

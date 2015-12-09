@@ -238,25 +238,29 @@ public class SocketServer implements Runnable
 	
 	public synchronized void processStartGame(SocketServerConnection c)
 	{
-		//TODO: Shuffle and distribute cards.
-		ArrayList<Card> deck = Card.getFullDeck();
+		// Create a new deck to distribute the cards from.
+		Deck deck = new Deck();
 		
-		// Get the 3 cards for the murder.
+		// Get the 3 cards for the murder. This also shuffles the deck
 		murderCards = new ArrayList<Card>();
-		murderCards.add(Card.removeTypeOfCard(deck, Card.CharacterType));
-		murderCards.add(Card.removeTypeOfCard(deck, Card.LocationType));
-		murderCards.add(Card.removeTypeOfCard(deck, Card.WeaponType));		
+		murderCards.add(deck.removeRandomCard(Card.CharacterType));
+		murderCards.add(deck.removeRandomCard(Card.LocationType));
+		murderCards.add(deck.removeRandomCard(Card.WeaponType));
 		
 		// Assign cards to the players.
 		int x = -1;
-		while(!deck.isEmpty())
+		Card nextCard = deck.removeNextCard();
+		while(nextCard != null)
 		{
 			x++;
 			if(x == seats.size())
 				x = 0;
 			
 			if(seats.get(x).seatTaken)
-				seats.get(x).playerConnection.cards.add(deck.remove(deck.size()-1));
+			{
+				seats.get(x).playerConnection.cards.add(nextCard);
+				nextCard = deck.removeNextCard();
+			}
 		}
 		
 		// Send out the cards to the clients
