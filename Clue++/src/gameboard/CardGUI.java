@@ -33,12 +33,15 @@ public class CardGUI {
 	JLabel[] labels = new JLabel[8];
 	
 	private JPanel cardBoard;
+	
+	/* This is no longer used. Just saved as a reference.
 	private final List<String> cardImagePaths = new ArrayList<String>(
 			Arrays.asList("Characters/ColonelMustard", "Characters/MissScarlet", "Characters/MrGreen",
 					"Characters/MrsPeacock", "Characters/MrsWhite", "Characters/ProfessorPlum", "Rooms/Ballroom",
 					"Rooms/BilliardRoom", "Rooms/Conservatory", "Rooms/DiningRoom", "Rooms/Hall", "Rooms/Kitchen",
 					"Rooms/Library", "Rooms/Lounge", "Rooms/Study", "Weapons/CandleStick", "Weapons/Knife",
 					"Weapons/LeadPipe", "Weapons/Revolver", "Weapons/Rope", "Weapons/Wrench"));
+	*/
 
 	/**
 	 * Creates instance of the Card GUI.
