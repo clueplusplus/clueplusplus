@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -31,6 +32,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import mainPackage.Game;
+import mainPackage.Map;
+
 /**
  * GUI for the game.
  */
@@ -38,11 +42,16 @@ public class GameBoardGUI {
 
     private final JPanel gui = new JPanel(new BorderLayout(3, 3));
     private final JComponent[][] locations = new JComponent[5][5];
+    private final JLabel[][] labels = new JLabel[5][5];
     private final Image[][] locationImages = new Image[5][5];
+    private final Image[] gamePieceImages = new Image[6];
     private JPanel gameBoard;
     private final List<String> roomImagePaths = new ArrayList<String>(Arrays.
             asList("Study", "Hall", "Lounge", "Library", "BilliardRoom",
                     "DiningRoom", "Conservatory", "Ballroom", "Kitchen"));
+    private final List<String> pieceImagePaths = new ArrayList<String>(Arrays.
+            asList("RedPiece.png", "PurplePiece.png", "BluePiece.png", "GreenPiece.png", "YellowPiece.png", "WhitePiece.png"));
+        
     private static final int imageSize = 150;
 
     /**
@@ -90,9 +99,49 @@ public class GameBoardGUI {
                     locations[row][column] = label;
                 } else {
                     // Create a button with the correct image.
-                    JLabel label = new JLabel();
-                    label.setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
-                    locations[row][column] = label;
+                    labels[row][column] = new JLabel();
+                    labels[row][column].setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
+                    locations[row][column] = labels[row][column];
+                }
+            }
+        }
+        
+        
+    }
+    
+    /**
+     * Update the images with the game peices on them.
+     */
+    private void updateGameBoard() {
+        for (int row = 0; row < locations.length; row++) {
+            for (int column = 0; column < locations[row].length; column++) {
+                
+            	Game game;
+            	
+                // If one of the 4 squares in the 5x5 grid that are not part of the board, skip it
+                if(!(row % 2 == 1 && column % 2 == 1)) {
+               	
+                	if(true){
+                		
+	                	BufferedImage sourceRoom = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
+	                	Graphics g = sourceRoom.createGraphics();
+	                	g.drawImage(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
+	                	g.dispose();
+	                	
+	                	BufferedImage gamePiece = new BufferedImage(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB);
+	                	Graphics g2 = gamePiece.createGraphics();
+	                	g2.drawImage(gamePieceImages[2].getScaledInstance(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
+	                	g2.dispose();
+	                	
+	                	Graphics gRoom = sourceRoom.getGraphics();
+	                	gRoom.drawImage(gamePiece, 0, 1, null);
+	                	gRoom.finalize();                	
+	                	
+	                    // Update the button with the new image.
+	                    labels[row][column] = new JLabel();
+	                    labels[row][column].setIcon(new ImageIcon(sourceRoom));
+	                    locations[row][column] = labels[row][column];
+                	}
                 }
             }
         }
@@ -182,5 +231,27 @@ public class GameBoardGUI {
                 }
             }
         }
+        
+        // Load Game Piece Images
+        for (int x = 0; x < gamePieceImages.length; x++) {
+
+            InputStream piece = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/GamePieces/" + pieceImagePaths.get(x));
+            BufferedImage biPeice = null;
+            try {
+            	biPeice = ImageIO.read(piece);
+            } catch (IOException ex) {
+                Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                	piece.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(GameBoardGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            gamePieceImages[x] = biPeice;
+     
+        }
     }
+    
+    
 }

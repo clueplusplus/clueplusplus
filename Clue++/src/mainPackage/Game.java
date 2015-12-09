@@ -1,3 +1,4 @@
+package mainPackage;
 
 import gameboard.CardGUI;
 import gameboard.ChecklistGUI;

@@ -1,3 +1,4 @@
+package mainPackage;
 import java.util.ArrayList;
 
 public class Map

@@ -1,8 +1,5 @@
-/Location.class
-/Map.class
-/Character.class
-/Room.class
-/PlayerSeats.class
-/PlayerSeat.class
-/Card.class
-/Weapon.class
+/resources/
+/gameboard/
+/GamePeices/
+/GamePieces/
+/mainPackage/
