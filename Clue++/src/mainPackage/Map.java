@@ -54,7 +54,10 @@ public class Map
 		
 		c.location.occupants.remove(c);
 		c.location = l;
-		l.occupants.add(c);		
+		l.occupants.add(c);
+		
+		// Maybe this doesn't need to be here. But why not.
+		Game.getInstance().updateGameBoard();
 	}
 	
 	Map()
@@ -63,35 +66,35 @@ public class Map
 		locations = new ArrayList<Location>(0);
 		
 		// Grouped into rows
-		Location aa = new Location(1, 1, Location.Study, 10);
-		Location ab = new Location(1, 2, "Hallway (1, 2)", 1);
-		Location ac = new Location(1, 3, Location.Hall, 10);
-		Location ad = new Location(1, 4, "Hallway (1, 4)", 1);
-		Location ae = new Location(1, 5, Location.Lounge, 10);
+		Location aa = new Location(0, 0, Location.Study, 10);
+		Location ab = new Location(0, 1, "Hallway (1, 2)", 1);
+		Location ac = new Location(0, 2, Location.Hall, 10);
+		Location ad = new Location(0, 3, "Hallway (1, 4)", 1);
+		Location ae = new Location(0, 4, Location.Lounge, 10);
 		
-		Location ba = new Location(2, 1, "Hallway (2, 1)", 1);
-		//Location bb = new Location(2, 2);
-		Location bc = new Location(2, 3, "Hallway (2, 3)", 1);
-		//Location bd = new Location(2, 4);
-		Location be = new Location(2, 5, "Hallway (2, 5)", 1);
+		Location ba = new Location(1, 0, "Hallway (2, 1)", 1);
+		//Location bb = new Location(1, 1);
+		Location bc = new Location(1, 2, "Hallway (2, 3)", 1);
+		//Location bd = new Location(2, 3);
+		Location be = new Location(1, 4, "Hallway (2, 5)", 1);
 		
-		Location ca = new Location(3, 1, Location.Library, 10);
-		Location cb = new Location(3, 2, "Hallway (3, 2)", 1);
-		Location cc = new Location(3, 3, Location.BilliardRoom, 10);
-		Location cd = new Location(3, 4, "Hallway (3, 4)", 1);
-		Location ce = new Location(3, 5, Location.DiningRoom, 10);
+		Location ca = new Location(2, 0, Location.Library, 10);
+		Location cb = new Location(2, 1, "Hallway (3, 2)", 1);
+		Location cc = new Location(2, 2, Location.BilliardRoom, 10);
+		Location cd = new Location(2, 3, "Hallway (3, 4)", 1);
+		Location ce = new Location(2, 4, Location.DiningRoom, 10);
 		
-		Location da = new Location(4, 1, "Hallway (4, 1)", 1);
-		//Location db = new Location(4, 2);
-		Location dc = new Location(4, 3, "Hallway (4, 3)", 1);
-		//Location dd = new Location(4, 4);
-		Location de = new Location(4, 5, "Hallway (4, 5)", 1);
+		Location da = new Location(3, 0, "Hallway (4, 1)", 1);
+		//Location db = new Location(3, 1);
+		Location dc = new Location(3, 2, "Hallway (4, 3)", 1);
+		//Location dd = new Location(3, 3);
+		Location de = new Location(3, 4, "Hallway (4, 5)", 1);
 		
-		Location ea = new Location(5, 1, Location.Conservatory, 10);
-		Location eb = new Location(5, 2, "Hallway (5, 2)", 1);
-		Location ec = new Location(5, 3, Location.Ballroom, 10);
-		Location ed = new Location(5, 4, "Hallway (5, 4)", 1);
-		Location ee = new Location(5, 5, Location.Kitchen, 10);
+		Location ea = new Location(4, 0, Location.Conservatory, 10);
+		Location eb = new Location(4, 1, "Hallway (5, 2)", 1);
+		Location ec = new Location(4, 2, Location.Ballroom, 10);
+		Location ed = new Location(4, 3, "Hallway (5, 4)", 1);
+		Location ee = new Location(4, 4, Location.Kitchen, 10);
 		
 		aa.down = ba;
 		aa.right = ab;
@@ -196,22 +199,22 @@ public class Map
 		// Generate the characters and place on the map.
 		characters = new ArrayList<Character>(0);
 		
-		Character a = new Character(Character.missScarlet, eb);
+		Character a = new Character(Character.missScarlet, eb, 0);
 		eb.occupants.add(a);
 		
-		Character b = new Character(Character.profPlum, de);
+		Character b = new Character(Character.profPlum, de, 1);
 		de.occupants.add(b);
 		
-		Character c = new Character(Character.mrsPeacock, be);
+		Character c = new Character(Character.mrsPeacock, be, 2);
 		be.occupants.add(c);
 		
-		Character d = new Character(Character.revGreen, ad);
+		Character d = new Character(Character.revGreen, ad, 3);
 		ad.occupants.add(d);
 		
-		Character e = new Character(Character.colMustard, da);
+		Character e = new Character(Character.colMustard, da, 4);
 		da.occupants.add(e);
 		
-		Character f = new Character(Character.mrsWhite, ab);
+		Character f = new Character(Character.mrsWhite, ab, 5);
 		ab.occupants.add(f);
 				
 		characters.add(a);

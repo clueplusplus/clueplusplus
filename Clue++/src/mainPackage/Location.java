@@ -22,7 +22,7 @@ public class Location
 	int capacity;
 	
 	// People in the location
-	ArrayList<Character> occupants = new ArrayList<Character>(0);
+	public ArrayList<Character> occupants = new ArrayList<Character>(0);
 	
 	static String Study = "Study";
 	static String Hall = "Hall";

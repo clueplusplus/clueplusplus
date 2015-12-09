@@ -38,7 +38,7 @@ public class Game {
     ChecklistGUI checklistGui;
     JFrame frame;
 	
-    Map map = new Map();
+    public Map map = new Map();
     
 	private Game() {
 		
@@ -91,16 +91,39 @@ public class Game {
 					startClientConnection(game, frame);
 				}
 
+				// Just some test code. Delete Eventually.
+				JOptionPane.showConfirmDialog(frame, "When you click OK I will move pieces on the board as a test.");
+				game.map.moveCharacter(Character.missScarlet, Location.BilliardRoom);
+				game.map.moveCharacter(Character.colMustard, Location.BilliardRoom);
+				
+				// TODO: Start selecting characters and whatnot.
+				/*
 				if (game.iAmServer) {
 					playGameAsPlayerOne(game, frame);
 				} else {
 					playGameAsPlayerTwo(game);
 				}
+				*/
             }
         };
         SwingUtilities.invokeLater(run);
     }
+    
+    public void updateGameBoard()
+    {
+    	SwingUtilities.invokeLater(new Runnable() {
 
+            public void run() {
+
+            	gameBoardGui.updateGameBoardPieces();
+
+            }
+
+        });
+    	
+    }
+
+    // TODO: Marina to delete or modify?
 	private static void playGameAsPlayerOne(Game game, JFrame frame) {
 		JRadioButton mustard = new JRadioButton("Colonel Mustard", true);
 		JRadioButton scarlet = new JRadioButton("Miss Scarlet", false);
@@ -108,7 +131,7 @@ public class Game {
 		JRadioButton peacock = new JRadioButton("Mrs. Peacock", false);
 		JRadioButton white = new JRadioButton("Mrs. White", false);
 		JRadioButton plum = new JRadioButton("Professor Plum", false);
-
+		
 		List<JRadioButton> characters = Arrays.asList(mustard, scarlet, green, peacock, white, plum);
 
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -121,11 +144,13 @@ public class Game {
 			characterSelectionPanel.add(radioButton);
 		}
 
-		ImageIcon characterPieceIcon = new ImageIcon(game.getClass().getResource("resources/misc_images/clue_game_piece.png"));
+		
+		//ImageIcon characterPieceIcon = new ImageIcon(game.getClass().getResource("resources/misc_images/clue_game_piece.png"));
 
 		Object[] option = {"Okay"};
-		int choice = JOptionPane.showOptionDialog(frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, characterPieceIcon, option, option[0]);
-
+		//int choice = JOptionPane.showOptionDialog(frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, characterPieceIcon, option, option[0]);
+		int choice = 1;
+		
 		String selectedCharacter = "Colonel Mustard";
 
 		if (choice == 0) {
@@ -137,10 +162,7 @@ public class Game {
 		}
 
 		System.out.println("Selected: " + selectedCharacter);
-
-		//TODO distribute cards to players
-		//TODO distribute cards to solution folder
-
+		
 		boolean gameOver = false;
 		while (!gameOver) {
 			gameOver = takeMyTurn(game);

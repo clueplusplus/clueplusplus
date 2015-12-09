@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import mainPackage.Game;
+import mainPackage.Location;
 import mainPackage.Map;
 
 /**
@@ -72,17 +74,27 @@ public class GameBoardGUI {
         setGameBoardScope();
         setupGameBoard();
         createPhysicalGameBoard();
+        updateGameBoardPieces();
     }
 
     /**
      * Adds the components of each location to the game board.
      */
     private void createPhysicalGameBoard() {
-        for (JComponent[] clueLocation : locations) {
+        /*
+    	for (JComponent[] clueLocation : locations) {
             for (JComponent clueLocation1 : clueLocation) {
                 gameBoard.add(clueLocation1);
             }
         }
+        */
+    	for(int x=0; x<locations.length; x++)
+    	{
+    		for(int y=0; y<locations[x].length; y++)
+    		{
+    			gameBoard.add(locations[x][y]);
+    		}
+    	}
     }
 
     /**
@@ -112,39 +124,62 @@ public class GameBoardGUI {
     /**
      * Update the images with the game peices on them.
      */
-    private void updateGameBoard() {
+    public void updateGameBoardPieces() {
+    	
+    	Game game = Game.getInstance();
+    	
         for (int row = 0; row < locations.length; row++) {
             for (int column = 0; column < locations[row].length; column++) {
-                
-            	Game game;
             	
                 // If one of the 4 squares in the 5x5 grid that are not part of the board, skip it
                 if(!(row % 2 == 1 && column % 2 == 1)) {
                	
-                	if(true){
+                	// Use this to find the players.
+                	Location location = game.map.getRoom(row, column);
+                	
+                	// Don't overlap the pieces when placing them inside rooms.
+                	Point[] copySpot = new Point[6];
+                	copySpot[0] = new Point(imageSize/3, imageSize/3);
+                	copySpot[1] = new Point(2*imageSize/3, 0);
+                	copySpot[2] = new Point(imageSize/3, 0);                	
+                	copySpot[3] = new Point(0, imageSize/3);
+                	copySpot[4] = new Point(0, 0);
+                	copySpot[5] = new Point(2*imageSize/3, 2*imageSize/3);
+                	
+                	// Get the image of the room we will be editing.
+                	BufferedImage sourceRoom = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
+                	Graphics g = sourceRoom.createGraphics();
+                	g.drawImage(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
+                	g.dispose();
+                	
+                	// Use this to draw the game pieces.
+                	Graphics gRoom = sourceRoom.getGraphics();
+                	
+                	for(int x = 0; x < location.occupants.size(); x++){
                 		
-	                	BufferedImage sourceRoom = new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB);
-	                	Graphics g = sourceRoom.createGraphics();
-	                	g.drawImage(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
-	                	g.dispose();
+                		// Figure out which game piece to draw based on the character in the location.
+                		mainPackage.Character c = location.occupants.get(x);
+                	
+                		// Get a copy of the game piece image.
+                		BufferedImage gamePiece = new BufferedImage(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB);
+	                	Graphics gPiece = gamePiece.createGraphics();
+	                	gPiece.drawImage(gamePieceImages[c.gamePieceImageIndex].getScaledInstance(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
+	                	gPiece.dispose();
 	                	
-	                	BufferedImage gamePiece = new BufferedImage(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB);
-	                	Graphics g2 = gamePiece.createGraphics();
-	                	g2.drawImage(gamePieceImages[2].getScaledInstance(imageSize/3, imageSize/3, BufferedImage.TYPE_INT_ARGB), 0, 0, null);
-	                	g2.dispose();
-	                	
-	                	Graphics gRoom = sourceRoom.getGraphics();
-	                	gRoom.drawImage(gamePiece, 0, 1, null);
-	                	gRoom.finalize();                	
-	                	
-	                    // Update the button with the new image.
-	                    labels[row][column] = new JLabel();
-	                    labels[row][column].setIcon(new ImageIcon(sourceRoom));
-	                    locations[row][column] = labels[row][column];
+	                	// Copy the game piece into it's location on the square.
+	                	gRoom.drawImage(gamePiece, copySpot[x].x, copySpot[x].y, null);	                	               		                	
                 	}
+                	
+                	// Finalize the image.
+                	gRoom.finalize();                	
+                	
+                    // Update the button with the new image.
+                    labels[row][column].setIcon(new ImageIcon(sourceRoom));
                 }
             }
         }
+        
+        gui.repaint();
     }
 
     /**
