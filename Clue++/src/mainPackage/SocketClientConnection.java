@@ -63,15 +63,13 @@ public class SocketClientConnection implements Runnable
 					// Parse messages
 					String messageType = in.readString();
 					
-					System.out.println("Received: " + messageType);
+					System.out.println("Client Received: " + messageType);
 					
 					// Changing the order here. First pick character
-					if(messageType.compareTo("AvailableCharacterList") == 0 && !comLock)
+					if(messageType.compareTo("AvailableCharacterList") == 0 )
 					{
-						// Lock this until we get a response whether valid or invalid -- should probably add a timeout for the lock
-						comLock = true;
 						
-						// Get additional message data.
+						// Get additional message data. -- this needs to be called to empty the input data stream
 						ArrayList<String> availableCharacters = new ArrayList<String>();
 						int count = in.readInt();
 						for(int x=0; x<count; x++)
@@ -79,38 +77,52 @@ public class SocketClientConnection implements Runnable
 							availableCharacters.add(in.readString());
 						}
 						
-						JRadioButton[] buttons = new JRadioButton[availableCharacters.size()];
+						if (!comLock)
+						{
+							// Lock this until we get a response whether valid or invalid -- should probably add a timeout for the lock
+							comLock = true;
 						
-						int idx=0;
-						for (String character : availableCharacters) {
-							System.out.println(character);
-							buttons[idx] = new JRadioButton(character, idx==0);
-							idx++;
-						} 
-						
-						ButtonGroup buttonGroup = new ButtonGroup();
-						for(JRadioButton button : buttons) {
-							buttonGroup.add(button);
-						}
-						
-						JPanel characterSelectionPanel = new JPanel();
-						for(JRadioButton button : buttons) {
-							characterSelectionPanel.add(button);
-						}
+							
+							JRadioButton[] buttons = new JRadioButton[availableCharacters.size()];
+							
+							int idx=0;
+							for (String character : availableCharacters) {
+								//System.out.println(character);
+								buttons[idx] = new JRadioButton(character, idx==0);
+								idx++;
+							} 
+							
+							ButtonGroup buttonGroup = new ButtonGroup();
+							for(JRadioButton button : buttons) {
+								buttonGroup.add(button);
+							}
+							
+							JPanel characterSelectionPanel = new JPanel();
+							for(JRadioButton button : buttons) {
+								characterSelectionPanel.add(button);
+							}
+	
+							Object[] option = {"Okay"};
+							int choice = JOptionPane.showOptionDialog(game.frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, option, option[0]);
+							
+							idx = 0;
+							for (JRadioButton radioButton : buttons) {
+								if (radioButton.isSelected()) {
+									this.sendSelectCharacter(availableCharacters.get(idx));
+								}
+								idx++;
+							}
 
-						Object[] option = {"Okay"};
-						int choice = JOptionPane.showOptionDialog(game.frame, characterSelectionPanel, "Select Your Character", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, option, option[0]);
-						
-						this.sendSelectCharacter(availableCharacters.get(choice));
-						
-						//TODO: Update list of connected players based on missing characters.
-						
-						//TODO: If I don't already have a character selected give me the option to choose one.
-						// There is a small chance we could be in the process of waiting for validation
-						// of a character selection when we get this message. If that happens we don't
-						// want to select another character. The server will not figure this problem out
-						// and we will get 2 seats.
+							//TODO: Update list of connected players based on missing characters.
+							
+							//TODO: If I don't already have a character selected give me the option to choose one.
+							// There is a small chance we could be in the process of waiting for validation
+							// of a character selection when we get this message. If that happens we don't
+							// want to select another character. The server will not figure this problem out
+							// and we will get 2 seats.
+							}
 					}
+					
 					
 					else if(messageType.compareTo("YouAreFirstPlayer") == 0)
 					{
@@ -127,7 +139,7 @@ public class SocketClientConnection implements Runnable
 					{
 						// This means the server has validated out choice.
 						String myCharacterName = in.readString();
-						
+						System.out.println("Your Character: "+ myCharacterName);
 						// Look up my character on the map and save it for reference.
 						game.myCharacter = game.map.getCharacter(myCharacterName);
 					}
@@ -213,7 +225,7 @@ public class SocketClientConnection implements Runnable
 					}
 					else
 					{
-						System.out.println("Socket Message Error: " + messageType);
+						System.out.println("Client - Received Message Error: " + messageType);
 					}
 		        }
 			}

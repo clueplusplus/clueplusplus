@@ -67,7 +67,7 @@ public class SocketServerConnection implements Runnable{
 				// Parse messages
 				String messageType = in.readString();
 				
-				System.out.println("Received: " + messageType);
+				System.out.println("Server Received: " + messageType);
 				
 				if(messageType.compareTo("SelectCharacter") == 0)
 				{
@@ -129,7 +129,7 @@ public class SocketServerConnection implements Runnable{
 				else
 				{
 					// Error somehow.
-					System.out.println("Socket Message Error: " + messageType);
+					System.out.println("Server - Received Message Error: " + messageType);
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class SocketServerConnection implements Runnable{
 		try {
 			synchronized(out)
 			{
-				out.writeString("YourAreFirstPlayer");
+				out.writeString("YouAreFirstPlayer");
 				out.flush();
 			}
 		} catch (IOException e) {
