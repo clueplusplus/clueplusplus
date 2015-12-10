@@ -5,6 +5,7 @@ import gameboard.ChecklistGUI;
 import gameboard.GameBoardGUI;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -189,7 +190,25 @@ public class Game {
 
 		frame.add(gameBoardGui.getGui(), BorderLayout.WEST);
 		frame.add(cardGui.getGui(), BorderLayout.SOUTH);
-		frame.add(checklistGui.getGui(), BorderLayout.EAST);
+		
+		// East panel has to contain the checkbox as well as the choice selection panel
+		JPanel eastPanel = new JPanel(new GridLayout(2,1));
+		eastPanel.add(checklistGui.getGui());
+		
+		// Use this panel to place buttons for choice selection
+		JPanel userOptionSelectPanel = new JPanel();
+		JButton a=new JButton("Start Game");
+		JButton b=new JButton("Choice 1");
+		JButton c=new JButton("Choice 2");
+		
+		userOptionSelectPanel.add(a);
+		userOptionSelectPanel.add(b);
+		userOptionSelectPanel.add(c);
+		
+		eastPanel.add(userOptionSelectPanel);
+		eastPanel.setVisible(true);
+		frame.add(eastPanel);
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Need Exit to kill all the socket threads. Not going for graceful
 		frame.setLocationByPlatform(true);
 		frame.pack();
