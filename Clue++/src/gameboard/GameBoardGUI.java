@@ -118,7 +118,7 @@ public class GameBoardGUI {
                     labels[row][column] = new JLabel();
                     labels[row][column].setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
                     locations[row][column] = labels[row][column];
-                    locations[row][column].setToolTipText(""+row+","+column);
+                    locations[row][column].setToolTipText(""+row+","+column); //TODO include location name in a better way
                 }
             }
         }
@@ -318,18 +318,12 @@ public class GameBoardGUI {
         moveChoice = null;
 
         for (JComponent button : moveOptionButtons) {
-            System.out.println("Grid move option: " + button.getToolTipText());
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
                     Location clickedLocation = map.getRoom(Integer.parseInt(button.getToolTipText().split(",")[0]), Integer.parseInt(button.getToolTipText().split(",")[1]));
-                    if (moveOptions.contains(clickedLocation)) {
-                        System.out.println("LEGAL MOVE TO " + clickedLocation.getRow() + " , " + clickedLocation.getCol());
-                        moveChoice = clickedLocation;
-                    } else {
-                        System.out.println("ILLEGAL MOVE TO " + clickedLocation.getRow() + " , " + clickedLocation.getCol());
-                    }
+                    moveChoice = clickedLocation;
                 }
             });
         }
