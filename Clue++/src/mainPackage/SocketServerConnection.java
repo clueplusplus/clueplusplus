@@ -79,7 +79,7 @@ public class SocketServerConnection implements Runnable{
 						
 						// Send the message back to the client that this is a valid choice.
 						sendYourCharacter();
-						sendStartTurn(characterName);
+//						sendStartTurn(characterName); TODO REMOVE THIS! This is my hacky way of checking movement
 					}
 					else
 					{
