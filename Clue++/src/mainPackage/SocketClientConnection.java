@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 
@@ -163,17 +164,31 @@ public class SocketClientConnection implements Runnable
 					else if(messageType.compareTo("StartTurn") == 0)
 					{
 						// Read the character who's turn it is.
-						String character = in.readString();
+						String currentCharacterName = in.readString();
 						
 						//TODO: Check if character is me, if so start my turn.
-						if(game.myCharacter.name.compareTo(character) == 0)
+						String myCharacterName = game.myCharacter.name;
+						if(myCharacterName.equals(currentCharacterName))
 						{
 							// Start my turn. Make sure to call gui functions in gui thread.
+							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
+
+							//TODO option to stay/make suggestion if automatically in room from some else's suggestion
+
+							//TODO make a move on the board
+							List<Location> moveOptions = game.map.getCharacter(myCharacterName).location.getAvailableMovementOptions();
+							Location moveChoice = game.selectOnBoard(moveOptions);
+							game.map.moveCharacter(myCharacterName, moveChoice.name);
+							sendMakeMove(moveChoice.name);
+
+							//TODO make suggestion
+							//TODO end turn
+							sendEndTurn();
 						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)
 					{
-						// Get the information about whos turn it is.
+						// Get the information about whose turn it is.
 						String character = in.readString();
 						String location = in.readString();
 						

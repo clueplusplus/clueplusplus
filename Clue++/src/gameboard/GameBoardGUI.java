@@ -11,11 +11,15 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventListener;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -114,6 +118,7 @@ public class GameBoardGUI {
                     labels[row][column] = new JLabel();
                     labels[row][column].setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
                     locations[row][column] = labels[row][column];
+                    locations[row][column].setToolTipText(""+row+","+column); //TODO include location name in a better way
                 }
             }
         }
@@ -287,6 +292,50 @@ public class GameBoardGUI {
      
         }
     }
-    
-    
+
+    private void clearAllMouseListenersOnBoard() {
+        for (JComponent[] locationRow : locations) {
+            for(JComponent location : locationRow) {
+                for (EventListener el : location.getListeners(MouseListener.class)) {
+                    if (el instanceof MouseListener) {
+                        MouseListener listener = (MouseListener)el;
+                        location.removeMouseListener(listener);
+                    }
+                }
+            }
+        }
+    }
+
+    private Location moveChoice;
+    public Location getMovementChoice(final List<Location> moveOptions, Map map) {
+        clearAllMouseListenersOnBoard();
+
+        List<JComponent> moveOptionButtons = new ArrayList<>();
+        for (Location moveOption : moveOptions) {
+            moveOptionButtons.add(labels[moveOption.getRow()][moveOption.getCol()]);
+        }
+
+        moveChoice = null;
+
+        for (JComponent button : moveOptionButtons) {
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    Location clickedLocation = map.getRoom(Integer.parseInt(button.getToolTipText().split(",")[0]), Integer.parseInt(button.getToolTipText().split(",")[1]));
+                    moveChoice = clickedLocation;
+                }
+            });
+        }
+
+        while (moveChoice == null) {
+            try {
+                Thread.sleep(200);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return moveChoice;
+    }
 }

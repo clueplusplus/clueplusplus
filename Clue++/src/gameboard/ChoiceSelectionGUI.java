@@ -12,7 +12,6 @@ public class ChoiceSelectionGUI {
 	 JButton makeSuggestionBtn = new JButton("Make Suggestion");
 	 JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
 
-	 
 	 public ChoiceSelectionGUI() {
 	        initializeGui();
 	    }
