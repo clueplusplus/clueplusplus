@@ -13,11 +13,13 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventListener;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -291,8 +293,23 @@ public class GameBoardGUI {
         }
     }
 
+    private void clearAllMouseListenersOnBoard() {
+        for (JComponent[] locationRow : locations) {
+            for(JComponent location : locationRow) {
+                for (EventListener el : location.getListeners(MouseListener.class)) {
+                    if (el instanceof MouseListener) {
+                        MouseListener listener = (MouseListener)el;
+                        location.removeMouseListener(listener);
+                    }
+                }
+            }
+        }
+    }
+
     private Location moveChoice;
-    public Location getMovementChoice(List<Location> moveOptions, Map map) {
+    public Location getMovementChoice(final List<Location> moveOptions, Map map) {
+        clearAllMouseListenersOnBoard();
+
         List<JComponent> moveOptionButtons = new ArrayList<>();
         for (Location moveOption : moveOptions) {
             moveOptionButtons.add(labels[moveOption.getRow()][moveOption.getCol()]);
@@ -306,7 +323,13 @@ public class GameBoardGUI {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
-                    moveChoice = map.getRoom(Integer.parseInt(button.getToolTipText().split(",")[0]), Integer.parseInt(button.getToolTipText().split(",")[1]));
+                    Location clickedLocation = map.getRoom(Integer.parseInt(button.getToolTipText().split(",")[0]), Integer.parseInt(button.getToolTipText().split(",")[1]));
+                    if (moveOptions.contains(clickedLocation)) {
+                        System.out.println("LEGAL MOVE TO " + clickedLocation.getRow() + " , " + clickedLocation.getCol());
+                        moveChoice = clickedLocation;
+                    } else {
+                        System.out.println("ILLEGAL MOVE TO " + clickedLocation.getRow() + " , " + clickedLocation.getCol());
+                    }
                 }
             });
         }
