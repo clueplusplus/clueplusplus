@@ -58,17 +58,32 @@ public class Location
 
 	public List<Location> getAvailableMovementOptions() {
 		List<Location> openLocations = new ArrayList<>();
+		if(up != null) {
+			System.out.println("Checking: " + up.name);
+		}
 		if (canMoveToLocation(up)) {
 			openLocations.add(up);
+		}
+		if(down != null) {
+			System.out.println("Checking: " + down.name);
 		}
 		if (canMoveToLocation(down)) {
 			openLocations.add(down);
 		}
+		if(right != null) {
+			System.out.println("Checking: " + right.name);
+		}
 		if (canMoveToLocation(right)) {
 			openLocations.add(right);
 		}
+		if(left != null) {
+			System.out.println("Checking: " + left.name);
+		}
 		if (canMoveToLocation(left)) {
 			openLocations.add(left);
+		}
+		if(tunnel != null) {
+			System.out.println("Checking: " + tunnel.name);
 		}
 		if (canMoveToLocation(tunnel)) {
 			openLocations.add(tunnel);
@@ -77,7 +92,7 @@ public class Location
 	}
 
 	public boolean canMoveToLocation(Location location) {
-		return location != null && occupants.size() < location.capacity;
+		return location != null && location.occupants.size() < location.capacity;
 	}
 
 	public int getRow() {

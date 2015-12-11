@@ -293,7 +293,6 @@ public class GameBoardGUI {
 
     private Location moveChoice;
     public Location getMovementChoice(List<Location> moveOptions, Map map) {
-        System.out.println("in gameboardgui, in getMovementChoice");
         List<JComponent> moveOptionButtons = new ArrayList<>();
         for (Location moveOption : moveOptions) {
             moveOptionButtons.add(labels[moveOption.getRow()][moveOption.getCol()]);
@@ -302,6 +301,7 @@ public class GameBoardGUI {
         moveChoice = null;
 
         for (JComponent button : moveOptionButtons) {
+            System.out.println("Grid move option: " + button.getToolTipText());
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {

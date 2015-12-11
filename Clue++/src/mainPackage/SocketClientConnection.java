@@ -188,6 +188,7 @@ public class SocketClientConnection implements Runnable
 
 							//TODO make suggestion
 							//TODO end turn
+							sendEndTurn();
 						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)

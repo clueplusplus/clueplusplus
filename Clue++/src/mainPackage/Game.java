@@ -206,7 +206,6 @@ public class Game {
 	}
 	
 	public Location selectOnBoard(List<Location> availableMoves) {
-		System.out.println("In Game, calling selectOnBoard");
 		return gameBoardGui.getMovementChoice(availableMoves, map);
 	}
 }
