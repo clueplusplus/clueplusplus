@@ -7,6 +7,8 @@ import gameboard.GameBoardGUI;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -119,15 +121,6 @@ public class Game {
 				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
 				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
 				game.cardGui.loadCardImages(myCards);
-				
-				// TODO: Start selecting characters and whatnot.
-				/*
-				if (game.iAmServer) {
-					playGameAsPlayerOne(game, frame);
-				} else {
-					playGameAsPlayerTwo(game);
-				}
-				*/
             }
         };
         SwingUtilities.invokeLater(run);
@@ -212,5 +205,8 @@ public class Game {
 		return frame;
 	}
 	
-	
+	public Location selectOnBoard(List<Location> availableMoves) {
+		System.out.println("In Game, calling selectOnBoard");
+		return gameBoardGui.getMovementChoice(availableMoves, map);
+	}
 }

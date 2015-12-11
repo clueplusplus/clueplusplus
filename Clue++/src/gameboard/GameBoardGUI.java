@@ -11,6 +11,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,6 +116,7 @@ public class GameBoardGUI {
                     labels[row][column] = new JLabel();
                     labels[row][column].setIcon(new ImageIcon(locationImages[row][column].getScaledInstance(imageSize, imageSize, BufferedImage.TYPE_INT_ARGB)));
                     locations[row][column] = labels[row][column];
+                    locations[row][column].setToolTipText(""+row+","+column);
                 }
             }
         }
@@ -287,6 +290,35 @@ public class GameBoardGUI {
      
         }
     }
-    
-    
+
+    private Location moveChoice;
+    public Location getMovementChoice(List<Location> moveOptions, Map map) {
+        System.out.println("in gameboardgui, in getMovementChoice");
+        List<JComponent> moveOptionButtons = new ArrayList<>();
+        for (Location moveOption : moveOptions) {
+            moveOptionButtons.add(labels[moveOption.getRow()][moveOption.getCol()]);
+        }
+
+        moveChoice = null;
+
+        for (JComponent button : moveOptionButtons) {
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    moveChoice = map.getRoom(Integer.parseInt(button.getToolTipText().split(",")[0]), Integer.parseInt(button.getToolTipText().split(",")[1]));
+                }
+            });
+        }
+
+        while (moveChoice == null) {
+            try {
+                Thread.sleep(200);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return moveChoice;
+    }
 }

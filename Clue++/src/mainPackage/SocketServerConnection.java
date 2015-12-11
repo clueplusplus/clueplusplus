@@ -79,6 +79,7 @@ public class SocketServerConnection implements Runnable{
 						
 						// Send the message back to the client that this is a valid choice.
 						sendYourCharacter();
+						sendStartTurn(characterName);
 					}
 					else
 					{

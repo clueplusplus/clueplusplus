@@ -1,5 +1,6 @@
 package mainPackage;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Location
 {
@@ -53,6 +54,38 @@ public class Location
 		if(tunnel != null) s.append("Tunnel: " + tunnel.name + "\n");
 		
 		return s.toString();
+	}
+
+	public List<Location> getAvailableMovementOptions() {
+		List<Location> openLocations = new ArrayList<>();
+		if (canMoveToLocation(up)) {
+			openLocations.add(up);
+		}
+		if (canMoveToLocation(down)) {
+			openLocations.add(down);
+		}
+		if (canMoveToLocation(right)) {
+			openLocations.add(right);
+		}
+		if (canMoveToLocation(left)) {
+			openLocations.add(left);
+		}
+		if (canMoveToLocation(tunnel)) {
+			openLocations.add(tunnel);
+		}
+		return openLocations;
+	}
+
+	public boolean canMoveToLocation(Location location) {
+		return location != null && occupants.size() < location.capacity;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public int getCol() {
+		return col;
 	}
 
 }

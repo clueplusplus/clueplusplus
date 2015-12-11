@@ -11,7 +11,7 @@ public class ChoiceSelectionGUI {
 	 JButton startGameBtn = new JButton("Start Game");
 	 JButton makeSuggestionBtn = new JButton("Make Suggestion");
 	 JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
-
+	 JButton chooseMoveLocation = new JButton("Choose Location for Move");
 	 
 	 public ChoiceSelectionGUI() {
 	        initializeGui();
@@ -21,6 +21,7 @@ public class ChoiceSelectionGUI {
 		 gui.add(startGameBtn);
 		 gui.add(makeSuggestionBtn);
 		 gui.add(rspToSuggestionBtn);
+		 gui.add(chooseMoveLocation);
 	 }
 	 
 	 public final JComponent getGui() {
