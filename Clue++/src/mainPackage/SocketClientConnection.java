@@ -170,21 +170,16 @@ public class SocketClientConnection implements Runnable
 						String myCharacterName = game.myCharacter.name;
 						if(myCharacterName.equals(currentCharacterName))
 						{
-							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location);
 							// Start my turn. Make sure to call gui functions in gui thread.
+							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
+
 							//TODO option to stay/make suggestion if automatically in room from some else's suggestion
 
 							//TODO make a move on the board
 							List<Location> moveOptions = game.map.getCharacter(myCharacterName).location.getAvailableMovementOptions();
-							for (Location location : moveOptions) {
-								System.out.println("Movement option: " + location.name);
-							}
 							Location moveChoice = game.selectOnBoard(moveOptions);
-							System.out.println("Made choice for movement: " + moveChoice.name);
 							game.map.moveCharacter(myCharacterName, moveChoice.name);
 							sendMakeMove(moveChoice.name);
-							System.out.println("Movement complete!");
-
 
 							//TODO make suggestion
 							//TODO end turn
