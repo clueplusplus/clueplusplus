@@ -11,17 +11,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import mainPackage.Card;
+import mainPackage.Character;
+import mainPackage.Game;
+import mainPackage.Location;
+import mainPackage.Weapon;
+
 /**
  * Displays the check list for the user. 
  */
 public class ChecklistGUI {
 	private final JPanel gui = new JPanel();
 	private JPanel checklist;
-	private final List<String> characters = Arrays.asList("Colonel Mustard", "Miss Scarlet", "Mr. Green",
-			"Mrs. Peacock", "Mrs. White", "Professor Plum");
-	private final List<String> rooms = Arrays.asList("Ballroom", "Billard Room", "Conservatory", "Dining Room",
-			"Hall", "Kitchen", "Library", "Lounge", "Study");
-	private final List<String> weapons = Arrays.asList("Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench");
+	private final List<String> characters = Arrays.asList(Character.getValues());
+	private final List<String> rooms = Arrays.asList(Location.getValues());
+	private final List<String> weapons = Arrays.asList(Weapon.getValues());
 
 	/**
 	 * Creates an instance of the check list.
@@ -172,9 +176,12 @@ public class ChecklistGUI {
 		Object[][] data = new Object[itemList.size()][2];
 		int count = 0;
 		for (String item : itemList) {
-			data[count][0] = item;
+			if (item != null) {
+			Card card = Game.getInstance().deck.findCard(item);
+			data[count][0] = card.alias;
 			data[count][1] = false;
 			count++;
+			}
 		}
 		return data;
 	}

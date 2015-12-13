@@ -35,6 +35,20 @@ public class Location
 	static String Ballroom = "Ballroom";
 	static String Kitchen = "Kitchen";
 	
+	public static String[] getValues() {
+		String[] rooms = new String[9];
+		rooms[0] = Study;
+		rooms[1] = Hall;
+		rooms[2] = Lounge;
+		rooms[3] = Library;
+		rooms[4] = BilliardRoom;
+		rooms[5] = DiningRoom;
+		rooms[6] = Conservatory;
+		rooms[7] = Ballroom;
+		rooms[8] = Kitchen;
+		return rooms;
+	}
+	
 	Location(int row, int col, String name, int capacity)
 	{
 		this.row = row;

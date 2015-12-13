@@ -1,20 +1,29 @@
 package mainPackage;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import gameboard.CardGUI;
 import gameboard.ChecklistGUI;
 import gameboard.ChoiceSelectionGUI;
 import gameboard.GameBoardGUI;
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
-import javax.swing.*;
 
 /**
  * Kicks off the start of the game. Holds important data.
@@ -32,6 +41,7 @@ public class Game {
 	public int port = 1234;
 	public SocketServer socketServer;
 	public SocketClientConnection clientConnection;
+	public boolean isSetupComplete = false;
 	
 	// This is probably not especially usefull after startup. We should ignore it most of the time.
 	public boolean iAmServer = false;
@@ -112,21 +122,88 @@ public class Game {
 				//game.map.moveCharacter(Character.colMustard, Location.BilliardRoom);
 				
 				// Load some random cards to test the GUI.
-				JOptionPane.showConfirmDialog(frame, "When you click OK I will load some cards as a test.");
-				ArrayList<Card> myCards = new ArrayList<Card>();				
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.CharacterType));
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.CharacterType));
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.LocationType));
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.LocationType));
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
-				myCards.add(Game.getInstance().deck.getRandomCard(Card.WeaponType));
+				choice = JOptionPane.showConfirmDialog(frame, "Do you want to upload custom names or images?", "Customize", JOptionPane.YES_NO_OPTION);
+				ArrayList<Card> myCards = new ArrayList<Card>();
+				int count = 0;
+				if (choice == JOptionPane.YES_OPTION) {
+					while (choice == JOptionPane.YES_OPTION) {
+						JPanel customChoice = new JPanel();
+						String[] items = new String[]{"Character", "Weapon", "Room"};
+						customChoice.add(new JLabel("Choose an item to customize"));
+						JComboBox<String> itemBox = new JComboBox<String>(items);
+						customChoice.add(itemBox);
+						Object[] option = {"Okay", "Cancel"};
+						int result = JOptionPane.showOptionDialog(frame, customChoice, "Choose an item to customize", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, option, option[0]);
+						if (result == 0) {
+							if ("Character".equals((String) itemBox.getSelectedItem())) {
+								uploadCustomGraphics(frame, "Character");
+							} else if ("Weapon".equals((String) itemBox.getSelectedItem())) {
+								uploadCustomGraphics(frame, "Weapon");
+							} else {
+								uploadCustomGraphics(frame, "Room");
+							}
+						} else {
+							choice = JOptionPane.NO_OPTION;
+						}
+						
+					}
+				} 
+				while (count < 6) {
+					myCards.add(Game.getInstance().deck.getRandomCard());
+					count++;
+				}
 				game.cardGui.loadCardImages(myCards);
+				game.isSetupComplete = true;
             }
         };
         SwingUtilities.invokeLater(run);
     }
     
-    public void updateGameBoard()
+    protected static void uploadCustomGraphics(JFrame frame, String itemType) {
+    	final JPanel choicePanel = new JPanel();
+    	choicePanel.add(new JLabel("Choose an item to customize"));
+    	DefaultComboBoxModel<String> model = null;
+    	if ("Character".equals(itemType)) {
+    		model = new DefaultComboBoxModel<String>(Character.getValues());
+    	} else if ("Weapon".equals(itemType)) {
+    		model = new DefaultComboBoxModel<String>(Weapon.getValues());
+    	} else {
+    		model = new DefaultComboBoxModel<String>(Location.getValues());
+    	}
+    	JComboBox<String> nameList = new JComboBox<>(model);
+    	choicePanel.add(nameList);
+    	choicePanel.add(new JLabel("Item's new name"));
+    	JTextField newName = new JTextField();
+    	choicePanel.add(newName);
+    	JButton button = new JButton("Choose an image to upload");
+    	final JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
+		chooser.setFileFilter(filter);
+		final JTextField pathField = new JTextField();
+    	button.addActionListener(new ActionListener() {
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			chooser.showOpenDialog(choicePanel);
+    			pathField.setText(chooser.getSelectedFile().getAbsolutePath());
+    		}
+    	});
+    	choicePanel.add(pathField);
+    	choicePanel.add(button);
+    	choicePanel.setLayout(new GridLayout(3, 2));
+    	Object[] option = {"Okay"};
+    	JOptionPane.showOptionDialog(frame, choicePanel, "Customize", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, option, option[0]);
+    	String characterChosen = (String) nameList.getSelectedItem();
+    	File imageChosen = chooser.getSelectedFile();
+    	Card card = Game.getInstance().deck.findCard(characterChosen);
+		card.filePath = imageChosen.getAbsolutePath();
+		card.alias = newName.getText();
+		Game.getInstance().checklistGui = new ChecklistGUI();
+		Game.getInstance().checklistGui.getGui().revalidate();
+		Game.getInstance().checklistGui.getGui().repaint();
+		frame.repaint();
+	}
+
+	public void updateGameBoard()
     {
     	SwingUtilities.invokeLater(new Runnable() {
 

@@ -6,8 +6,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.*;
+
+import mainPackage.utility.CustomUtility;
 
 
 public class SocketClientConnection implements Runnable
@@ -22,10 +25,10 @@ public class SocketClientConnection implements Runnable
 	
 	private	SocketDecoder in;
 	public SocketEncoder out;	
-	
 	public volatile boolean connected = false;	
 	public volatile boolean attemptToConnect = true;
 	public boolean comLock = false; // Added this communication lock to prevent flooding the server with the same query while waiting for a response
+
 	
 	public SocketClientConnection()
 	{
@@ -36,7 +39,6 @@ public class SocketClientConnection implements Runnable
 	{
 		this.ipaddr = ipaddr;
 		this.port = port;
-		
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -65,17 +67,20 @@ public class SocketClientConnection implements Runnable
 					String messageType = in.readString();
 					
 					System.out.println("Client Received: " + messageType);
-					
-					// Changing the order here. First pick character
-					if(messageType.compareTo("AvailableCharacterList") == 0 )
+					if (messageType.compareTo("Customize") == 0) {
+						while (!game.isSetupComplete) {
+							Thread.sleep(1000);
+						}
+					} else if(messageType.compareTo("AvailableCharacterList") == 0 )
 					{
 						
 						// Get additional message data. -- this needs to be called to empty the input data stream
-						ArrayList<String> availableCharacters = new ArrayList<String>();
+						java.util.Map<String, String> availableCharacters = new HashMap<String, String>();
 						int count = in.readInt();
 						for(int x=0; x<count; x++)
 						{
-							availableCharacters.add(in.readString());
+							String character = in.readString();
+							availableCharacters.put(character, getAlias(character));
 						}
 						
 						if (!comLock)
@@ -87,9 +92,9 @@ public class SocketClientConnection implements Runnable
 							JRadioButton[] buttons = new JRadioButton[availableCharacters.size()];
 							
 							int idx=0;
-							for (String character : availableCharacters) {
+							for (String character : availableCharacters.keySet()) {
 								//System.out.println(character);
-								buttons[idx] = new JRadioButton(character, idx==0);
+								buttons[idx] = new JRadioButton(availableCharacters.get(character), idx==0);
 								idx++;
 							} 
 							
@@ -109,7 +114,8 @@ public class SocketClientConnection implements Runnable
 							idx = 0;
 							for (JRadioButton radioButton : buttons) {
 								if (radioButton.isSelected()) {
-									this.sendSelectCharacter(availableCharacters.get(idx));
+									
+									this.sendSelectCharacter(CustomUtility.revereseMapLookup(radioButton.getText(), availableCharacters));
 								}
 								idx++;
 							}
@@ -259,6 +265,24 @@ public class SocketClientConnection implements Runnable
 		}
 	}
 	
+	private String getAlias(String character) {
+		for (Card card: game.deck.cards) {
+			if (character.equals(card.name)) {
+				return card.alias;
+			}
+		}
+		return null;
+	}
+	
+	private String getStandard(String alias) {
+		for (Card card: game.deck.cards) {
+			if (alias.equals(card.alias)) {
+				return card.name;
+			}
+		}
+		return null;
+	}
+
 	public boolean waitForConnection(int timeout)
 	{
 		int seconds = 0;

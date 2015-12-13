@@ -52,6 +52,7 @@ public class SocketServerConnection implements Runnable{
 	{
 		try
 		{
+			sendCustomize();
 			// If this is the first person to connect they decide when to start the game.
 			// AM: The server side assigns the player who starts the server as the first player
 			// AM: Send message to client that it is first player 
@@ -141,6 +142,19 @@ public class SocketServerConnection implements Runnable{
 		}
 	}
 	
+	private void sendCustomize() {
+		try {
+			synchronized(out)
+			{
+				out.writeString("Customize");
+				out.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void sendYouAreFirstPlayer()
 	{
 		try {

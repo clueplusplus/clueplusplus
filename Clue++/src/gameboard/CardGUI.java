@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,15 +35,6 @@ public class CardGUI {
 	JLabel[] labels = new JLabel[8];
 	
 	private JPanel cardBoard;
-	
-	/* This is no longer used. Just saved as a reference.
-	private final List<String> cardImagePaths = new ArrayList<String>(
-			Arrays.asList("Characters/ColonelMustard", "Characters/MissScarlet", "Characters/MrGreen",
-					"Characters/MrsPeacock", "Characters/MrsWhite", "Characters/ProfessorPlum", "Rooms/Ballroom",
-					"Rooms/BilliardRoom", "Rooms/Conservatory", "Rooms/DiningRoom", "Rooms/Hall", "Rooms/Kitchen",
-					"Rooms/Library", "Rooms/Lounge", "Rooms/Study", "Weapons/CandleStick", "Weapons/Knife",
-					"Weapons/LeadPipe", "Weapons/Revolver", "Weapons/Rope", "Weapons/Wrench"));
-	*/
 
 	/**
 	 * Creates instance of the Card GUI.
@@ -68,14 +61,14 @@ public class CardGUI {
 		
 		// Load dummy placeholders for cards.
 		ArrayList<Card> myCards = new ArrayList<Card>();				
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
 		loadCardImages(myCards);
 		
 	}
@@ -121,10 +114,15 @@ public class CardGUI {
 	 * @return The image.
 	 */
 	private Image getImage(Card card) {
+		InputStream cardStream = null;
 		// Load the correct input stream.
-		InputStream cardStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Cards/" + card.filePath + ".jpg");
         BufferedImage cardImage = null;
         try {
+        	if (card.filePath.contains(".")) {
+    			cardStream = new FileInputStream(new File(card.filePath));
+    		} else {
+    		 cardStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/Cards/" + card.filePath + ".jpg");
+    		}
         	// Read the image.
             cardImage = ImageIO.read(cardStream);
         } catch (IOException ex) {

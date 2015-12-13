@@ -1,4 +1,5 @@
 package mainPackage;
+
 public class Character
 {
 	public String name;
@@ -20,5 +21,16 @@ public class Character
 		this.userSuppliedName = name;
 		this.location = location;
 		this.gamePieceImageIndex = gamePieceImageIndex;
+	}
+	
+	public static String[] getValues() {
+		String[] names = new String[6];
+		names[0] = missScarlet;
+		names[1] = profPlum;
+		names[2] = mrsPeacock;
+		names[3] = revGreen;
+		names[4] = colMustard;
+		names[5] = mrsWhite;
+		return names;
 	}
 }

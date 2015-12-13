@@ -307,7 +307,7 @@ public class GameBoardGUI {
     }
 
     private Location moveChoice;
-    public Location getMovementChoice(final List<Location> moveOptions, Map map) {
+    public Location getMovementChoice(final List<Location> moveOptions, final Map map) {
         clearAllMouseListenersOnBoard();
 
         List<JComponent> moveOptionButtons = new ArrayList<>();
@@ -317,7 +317,7 @@ public class GameBoardGUI {
 
         moveChoice = null;
 
-        for (JComponent button : moveOptionButtons) {
+        for (final JComponent button : moveOptionButtons) {
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
