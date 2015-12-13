@@ -119,6 +119,8 @@ public class SocketClientConnection implements Runnable
 								}
 								idx++;
 							}
+							
+							game.choiceGui.setVisible();
 
 							//TODO: Update list of connected players based on missing characters.
 							
@@ -133,6 +135,7 @@ public class SocketClientConnection implements Runnable
 					
 					else if(messageType.compareTo("YouAreFirstPlayer") == 0)
 					{
+						game.choiceGui.setStartVisible();
 						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
 						
 					}

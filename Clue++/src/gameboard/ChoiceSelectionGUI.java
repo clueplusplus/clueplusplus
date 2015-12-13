@@ -25,4 +25,20 @@ public class ChoiceSelectionGUI {
 	 public final JComponent getGui() {
 	        return gui;
 	 }
+	 
+	 public void setInvisible(){
+		 this.gui.setVisible(false);
+	 }
+	 
+	 public void setVisible(){
+		 this.gui.setVisible(true);
+	 }
+	 
+	 public void setStartInvisible(){
+		 this.startGameBtn.setVisible(false);
+	 }
+	 
+	 public void setStartVisible(){
+		 this.startGameBtn.setVisible(true);
+	 }
 }

@@ -271,6 +271,9 @@ public class Game {
 		eastPanel.add(checklistGui.getGui());
 		eastPanel.add(choiceGui.getGui());
 		
+		// Set all buttons to disabled and make start game invisible
+		game.choiceGui.setInvisible();
+		game.choiceGui.setStartInvisible();
 		
 		frame.add(eastPanel);
 		
