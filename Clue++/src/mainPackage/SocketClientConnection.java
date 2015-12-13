@@ -142,7 +142,8 @@ public class SocketClientConnection implements Runnable
 						game.choiceGui.startGameBtn.addActionListener(new ActionListener() { 
 							  public void actionPerformed(ActionEvent e) { 
 							    sendStartGame();
-							    game.choiceGui.setStartInvisible();
+							    game.choiceGui.setAllOptionsInvisible();
+							    game.choiceGui.startGameBtn.setVisible(false);
 							  } 
 						} );
 						
@@ -199,7 +200,7 @@ public class SocketClientConnection implements Runnable
 							Location moveChoice = game.selectOnBoard(moveOptions);
 							game.map.moveCharacter(myCharacterName, moveChoice.name);
 							sendMakeMove(moveChoice.name);
-
+							System.out.println("Hey!! I moved TEST");
 							//TODO make suggestion
 							//TODO end turn
 							sendEndTurn();
@@ -213,6 +214,18 @@ public class SocketClientConnection implements Runnable
 						
 						// Update the map.
 						game.map.moveCharacter(character, location);
+						
+						System.out.println(game.myCharacter.location.name);
+						// Update Choice Options
+						if(!game.myCharacter.location.name.contains("Hallway")){
+							game.choiceGui.setAllOptionsVisible();
+							
+						}
+						else{
+							game.choiceGui.setAllOptionsInvisible();
+						}
+							
+						
 					}
 					else if(messageType.compareTo("SuggestionNotification") == 0)
 					{

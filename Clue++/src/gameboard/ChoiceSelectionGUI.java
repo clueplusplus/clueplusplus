@@ -9,8 +9,10 @@ public class ChoiceSelectionGUI {
 	 
 	 // Add other buttons here as needed
 	 public JButton startGameBtn = new JButton("Start Game");
-	 JButton makeSuggestionBtn = new JButton("Make Suggestion");
-	 JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
+	 public JButton makeSuggestionBtn = new JButton("Make Suggestion");
+	 public JButton makeAccusationBtn = new JButton("Make Accusation");
+	 public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
+	 
 
 	 public ChoiceSelectionGUI() {
 	        initializeGui();
@@ -19,6 +21,7 @@ public class ChoiceSelectionGUI {
 	 public final void initializeGui() {
 		 gui.add(startGameBtn);
 		 gui.add(makeSuggestionBtn);
+		 gui.add(makeAccusationBtn);
 		 gui.add(rspToSuggestionBtn);
 	 }
 	 
@@ -33,6 +36,32 @@ public class ChoiceSelectionGUI {
 	 public void setVisible(){
 		 this.gui.setVisible(true);
 	 }
+	 
+	 public void setAllOptionsInvisible(){
+		 makeSuggestionBtn.setVisible(false);
+		 makeAccusationBtn.setVisible(false);
+		 rspToSuggestionBtn.setVisible(false);
+	 }
+	 
+	 public void setAllOptionsVisible(){
+		 makeSuggestionBtn.setVisible(true);
+		 makeAccusationBtn.setVisible(true);
+		 rspToSuggestionBtn.setVisible(true);
+	 }
+	 
+	 public void setRoomOptionsInvisible(){
+		 makeSuggestionBtn.setVisible(false);
+		 makeAccusationBtn.setVisible(false);
+		 rspToSuggestionBtn.setVisible(false);
+	 }
+
+	 public void setRoomOptionsVisible(){
+		 makeSuggestionBtn.setVisible(true);
+		 makeAccusationBtn.setVisible(true);
+		 rspToSuggestionBtn.setVisible(true);
+	 }
+	 
+	 
 	 
 	 public void setStartInvisible(){
 		 this.startGameBtn.setVisible(false);
