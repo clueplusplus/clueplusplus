@@ -96,6 +96,12 @@ public class CardGUI {
 	
 	public void loadCardImages(List<Card> cards) {
 		
+		if(cards.size() > labels.length)
+		{
+			System.out.println("Error in loadCardImages. To many cards.");
+			return;
+		}
+		
 		int x = 0;
 		for(; x<cards.size(); x++) {
 			// Create a button with the correct image.

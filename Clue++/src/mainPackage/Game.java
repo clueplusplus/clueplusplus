@@ -43,9 +43,14 @@ public class Game {
 	public SocketClientConnection clientConnection;
 	public boolean isSetupComplete = false;
 	
-	// This is probably not especially usefull after startup. We should ignore it most of the time.
+	// This is probably not especially useful after startup. We should ignore it most of the time.
 	public boolean iAmServer = false;
 	
+	// Game state info
+	public boolean iAmFirstPlayer = false;
+	public boolean myTurn = false;
+	public boolean mySuggestionRound = false;
+		
 	// Traits assigned to my person
 	Character myCharacter;
 	ArrayList<Card> myCards;

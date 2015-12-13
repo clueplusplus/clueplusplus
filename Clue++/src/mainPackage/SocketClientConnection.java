@@ -141,18 +141,10 @@ public class SocketClientConnection implements Runnable
 					
 					else if(messageType.compareTo("YouAreFirstPlayer") == 0)
 					{
-						game.choiceGui.setStartVisible();
+						game.iAmFirstPlayer = true;
+						game.choiceGui.setStartVisible();			
 						
-						game.choiceGui.startGameBtn.addActionListener(new ActionListener() { 
-							  public void actionPerformed(ActionEvent e) { 
-							    sendStartGame();
-							    game.choiceGui.setAllOptionsInvisible();
-							    game.choiceGui.startGameBtn.setVisible(false);
-							  } 
-						} );
-						
-						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
-						
+						// Moved button code to ChoiceSelectionGui.
 					}
 					else if(messageType.compareTo("InvalidCharacter") == 0)
 					{
@@ -165,6 +157,7 @@ public class SocketClientConnection implements Runnable
 						// This means the server has validated out choice.
 						String myCharacterName = in.readString();
 						System.out.println("Your Character: "+ myCharacterName);
+						game.choiceGui.addTextLine("My Character: "+ myCharacterName);
 						// Look up my character on the map and save it for reference.
 						game.myCharacter = game.map.getCharacter(myCharacterName);
 					}
@@ -196,9 +189,11 @@ public class SocketClientConnection implements Runnable
 						String myCharacterName = game.myCharacter.name;
 						if(myCharacterName.equals(currentCharacterName))
 						{
+							game.myTurn = true;
+							
 							// Start my turn. Make sure to call gui functions in gui thread.
 							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
-							game.choiceGui.addTextLine("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
+							game.choiceGui.addTextLine("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name + " and I need to make a move.");
 							
 							//TODO option to stay/make suggestion if automatically in room from some else's suggestion
 
@@ -207,10 +202,24 @@ public class SocketClientConnection implements Runnable
 							Location moveChoice = game.selectOnBoard(moveOptions);
 							game.map.moveCharacter(myCharacterName, moveChoice.name);
 							sendMakeMove(moveChoice.name);
-							System.out.println("Hey!! I moved TEST");
-							//TODO make suggestion
-							//TODO end turn
-							sendEndTurn();
+							game.choiceGui.addTextLine("I moved to " + moveChoice.name);
+							
+							//TODO make suggestion if in a room.
+							if(game.myCharacter.location.isRoom())
+							{
+								game.choiceGui.addTextLine("I now need to make a suggestion.");
+								game.choiceGui.makeSuggestionBtn.setEnabled(true);
+							}
+							else
+							{
+								game.choiceGui.addTextLine("I cannot make a suggestion. I need to make an accusation or end my turn.");
+								game.choiceGui.makeSuggestionBtn.setEnabled(false);
+								game.choiceGui.makeAccusationBtn.setEnabled(true);
+								game.choiceGui.endTurnBtn.setEnabled(true);
+							}
+							
+							
+							// Game flow follows from state machine actions.
 						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)

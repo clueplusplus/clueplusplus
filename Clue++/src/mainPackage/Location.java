@@ -49,6 +49,19 @@ public class Location
 		return rooms;
 	}
 	
+	public boolean isRoom()
+	{
+		String[] rooms = getValues();
+		
+		for(String s : rooms)
+		{
+			if(s.compareTo(name) == 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
 	Location(int row, int col, String name, int capacity)
 	{
 		this.row = row;
