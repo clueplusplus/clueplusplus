@@ -3,6 +3,9 @@ package gameboard;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 public class ChoiceSelectionGUI {
 	 private final JPanel gui = new JPanel();
@@ -12,8 +15,10 @@ public class ChoiceSelectionGUI {
 	 public JButton makeSuggestionBtn = new JButton("Make Suggestion");
 	 public JButton makeAccusationBtn = new JButton("Make Accusation");
 	 public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
+	 public JTextArea textArea = new JTextArea(20, 40);
+	 public JScrollPane scrollPane = new JScrollPane(textArea); 
 	 
-
+	 
 	 public ChoiceSelectionGUI() {
 	        initializeGui();
 	    }
@@ -23,6 +28,22 @@ public class ChoiceSelectionGUI {
 		 gui.add(makeSuggestionBtn);
 		 gui.add(makeAccusationBtn);
 		 gui.add(rspToSuggestionBtn);
+		 gui.add(scrollPane);
+		 
+		 textArea.setEditable(false);
+	 }
+	 
+	 public void addTextLine(final String text)
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	textArea.setText(text + "\n" + textArea.getText());
+
+	            }
+
+	        });
 	 }
 	 
 	 public final JComponent getGui() {

@@ -148,11 +148,7 @@ public class Game {
 						
 					}
 				} 
-				while (count < 6) {
-					myCards.add(Game.getInstance().deck.getRandomCard());
-					count++;
-				}
-				game.cardGui.loadCardImages(myCards);
+				
 				game.isSetupComplete = true;
             }
         };

@@ -85,6 +85,10 @@ public class SocketClientConnection implements Runnable
 							availableCharacters.put(character, getAlias(character));
 						}
 						
+						// Show how many players have joined so far.
+						if(count != 6)
+							game.choiceGui.addTextLine("There are " + (6-count) + " players in the game.");
+						
 						if (!comLock)
 						{
 							// Lock this until we get a response whether valid or invalid -- should probably add a timeout for the lock
@@ -175,11 +179,13 @@ public class SocketClientConnection implements Runnable
 							game.myCards.add(game.deck.findCard(in.readString()));
 						}
 						
-						//TODO: Save these cards somewhere? Move to next step of game?						
+						game.cardGui.loadCardImages(game.myCards);						
+												
 					}
 					else if(messageType.compareTo("StartGame") == 0)
 					{
 						//TODO: Start the game! Make sure gui functions are in gui thread.
+						game.choiceGui.addTextLine("Game has started!");
 					}
 					else if(messageType.compareTo("StartTurn") == 0)
 					{
@@ -192,7 +198,8 @@ public class SocketClientConnection implements Runnable
 						{
 							// Start my turn. Make sure to call gui functions in gui thread.
 							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
-
+							game.choiceGui.addTextLine("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
+							
 							//TODO option to stay/make suggestion if automatically in room from some else's suggestion
 
 							//TODO make a move on the board
@@ -211,6 +218,8 @@ public class SocketClientConnection implements Runnable
 						// Get the information about whose turn it is.
 						String character = in.readString();
 						String location = in.readString();
+						
+						game.choiceGui.addTextLine(character + " moved to " + location);
 						
 						// Update the map.
 						game.map.moveCharacter(character, location);
@@ -237,6 +246,7 @@ public class SocketClientConnection implements Runnable
 						String suggestionWeapon = in.readString();
 						
 						//TODO: Log the event. Respond if I am the characterToRespond. Gui functions in gui thread.
+						game.choiceGui.addTextLine(suggestingCharacter + " suggested that it was " + suggestionCharacter + " in the " + suggestionRoom + " with the " + suggestionWeapon + ". It is " + characterToRespond + "'s turn to respond.");
 						
 						// Update the map since a character gets moved for this.
 						game.map.moveCharacter(suggestionCharacter, suggestionRoom);
@@ -246,13 +256,29 @@ public class SocketClientConnection implements Runnable
 						String respondingCharacter = in.readString();
 						String card = in.readString(); // May be "NoCard"
 						
-						//TODO: Log the event. May required special handling if I was the suggester.
-						// Gui actions in gui thread.
+						//Log the event.
+						
+						// If I was suggesting.
+						if(card.compareTo("NoCard") == 0)
+						{
+							game.choiceGui.addTextLine(respondingCharacter + " could not show a card." );
+						}
+						else if(true) // If I suggested then I get to see which card it was.
+						{
+							game.choiceGui.addTextLine(respondingCharacter + " showed: " + card);
+							
+							// TODO: Special handling if I was the suggester.
+						}
+						else // If I was not suggesting I just know there was a card shown.
+						{
+							game.choiceGui.addTextLine(respondingCharacter + " showed a card");
+						}
+						
 					}
 					else if(messageType.compareTo("SuggestionRoundComplete") == 0)
 					{
-						//TODO: Log the event. May required special handling if I was the suggester. Remember I need to end my own turn.
-						// Make sure gui actions in gui thread.
+						// TODO: special handling if i was the suggestor. Allow me to accuse or end turn.
+						game.choiceGui.addTextLine("The suggestion round is complete.");
 					}
 					else if(messageType.compareTo("AccusationMade") == 0)
 					{
@@ -263,12 +289,25 @@ public class SocketClientConnection implements Runnable
 						String accuracy = in.readString(); // "Correct" or "Incorrect"
 												
 						//TODO: Log the event. Gui actions in gui thread.
+						game.choiceGui.addTextLine(accusingCharacter + " accused " + accusationCharacter + " in the " + accusationRoom + " with the " + accusationWeapon + ".");
+						
+						if(accuracy.compareTo("Correct") == 0)
+						{
+							game.choiceGui.addTextLine("They were correct!");
+						}
+						else
+						{
+							game.choiceGui.addTextLine("They were incorrect :(");
+						}
+						
 					}
 					else if(messageType.compareTo("EndGame") == 0)
 					{
 						String reason = in.readString();
 						
-						//TODO: The game is over. Display the reason. Gui actions in gui thread.
+						game.choiceGui.addTextLine("The game is over because: " + reason);
+						
+						//TODO: Clean up the game.
 					}
 					else
 					{

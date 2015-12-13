@@ -1,0 +1,9 @@
+diff a/Clue++/src/gameboard/ChoiceSelectionGUI.java b/Clue++/src/gameboard/ChoiceSelectionGUI.java	(rejected hunks)
+@@ -12,7 +12,6 @@
+ 	 JButton makeSuggestionBtn = new JButton("Make Suggestion");
+ 	 JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
+ 
+-	 
+ 	 public ChoiceSelectionGUI() {
+ 	        initializeGui();
+ 	    }

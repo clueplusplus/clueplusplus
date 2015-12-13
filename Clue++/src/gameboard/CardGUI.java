@@ -32,7 +32,7 @@ import mainPackage.Game;
 public class CardGUI {
 	private final JPanel gui = new JPanel();
 	
-	JLabel[] labels = new JLabel[8];
+	JLabel[] labels = new JLabel[9];
 	
 	private JPanel cardBoard;
 
@@ -59,16 +59,10 @@ public class CardGUI {
 		setCardBoardScope();
 		setupCardBoard();
 		
-		// Load dummy placeholders for cards.
-		ArrayList<Card> myCards = new ArrayList<Card>();				
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
-		myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));
+		// Load dummy placeholders for cards. Changed to 9 to account for worst case of 2 players.
+		ArrayList<Card> myCards = new ArrayList<Card>();
+		for(int x=0; x<labels.length; x++)
+			myCards.add(new Card("Question Mark", 3, "Characters/Question", "Question Mark"));		
 		loadCardImages(myCards);
 		
 	}
@@ -101,10 +95,18 @@ public class CardGUI {
 	}
 	
 	public void loadCardImages(List<Card> cards) {
-		for(int x=0; x<cards.size(); x++) {
+		
+		int x = 0;
+		for(; x<cards.size(); x++) {
 			// Create a button with the correct image.
 			labels[x].setIcon(new ImageIcon(getImage(cards.get(x)).getScaledInstance(160, 200, BufferedImage.TYPE_INT_ARGB)));
 		}
+		
+		for(; x<labels.length; x++) {
+			// Create a button with the correct image.
+			labels[x].setIcon(new ImageIcon(getImage(new Card("Blank", 3, "Characters/Blank", "Blank")).getScaledInstance(160, 200, BufferedImage.TYPE_INT_ARGB)));
+		}
+		
 	}
 
 	/**
