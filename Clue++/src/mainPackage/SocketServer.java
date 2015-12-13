@@ -178,16 +178,18 @@ public class SocketServer implements Runnable
 	{
 		while(respondingPlayerSeat != suggestingPlayerSeat)
 		{
-			if(respondingPlayerSeat == seats.size())
+			if(respondingPlayerSeat >= seats.size())
 			{
-				suggestingPlayerSeat = 0;
+				respondingPlayerSeat = 0;
 			}
 			else 
 			{
 				if(seats.get(respondingPlayerSeat).seatTaken)
 				{
 					sendSuggestionNotification(	seats.get(suggestingPlayerSeat).characterName, 
-												seats.get(respondingPlayerSeat).characterName);				
+												seats.get(respondingPlayerSeat).characterName);
+					
+					break;
 				}
 				else
 				{
@@ -235,6 +237,15 @@ public class SocketServer implements Runnable
 		else
 		{
 			seats.get(accusingPlayerSeat).playerIsStillInGame = false;
+			
+			int count = 0;
+			for(PlayerSeat p : seats)
+				if(p.playerIsStillInGame) count++;
+			
+			if(count > 1)
+				processEndTurn(c);
+			else
+				this.sendEndGame("There is only one player left. They are the winner!");
 		}
 	}
 	

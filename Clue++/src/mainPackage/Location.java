@@ -5,8 +5,8 @@ import java.util.List;
 public class Location
 {
 	// Name of location
-	String name = "";
-	String userGeneratedName; // null if not used.
+	public String name = "";
+	public String userGeneratedName; // null if not used.
 	
 	// Grid Locations
 	int row;

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.swing.*;
 
+import gameboard.SuggestionResponseGUI;
 import mainPackage.utility.CustomUtility;
 
 
@@ -86,8 +87,9 @@ public class SocketClientConnection implements Runnable
 						}
 						
 						// Show how many players have joined so far.
-						if(count != 6)
-							game.choiceGui.addTextLine("There are " + (6-count) + " players in the game.");
+						game.connectedPlayers = 6 - count;
+						if(game.connectedPlayers != 0)
+							game.choiceGui.addTextLine("There are " + game.connectedPlayers + " players in the game.");
 						
 						if (!comLock)
 						{
@@ -206,7 +208,7 @@ public class SocketClientConnection implements Runnable
 							sendMakeMove(moveChoice.name);
 							game.choiceGui.addTextLine("I moved to " + moveChoice.name);
 							
-							//TODO make suggestion if in a room.
+							// Make suggestion if in a room.
 							if(game.myCharacter.location.isRoom())
 							{
 								game.choiceGui.addTextLine("I now need to make a suggestion.");
@@ -216,9 +218,7 @@ public class SocketClientConnection implements Runnable
 							{
 								game.choiceGui.addTextLine("I cannot make a suggestion. I need to make an accusation or end my turn.");
 								game.choiceGui.setAccusationConfiguration();
-							}							
-							
-							// Game flow follows from state machine actions.
+							}
 						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)
@@ -227,22 +227,13 @@ public class SocketClientConnection implements Runnable
 						String character = in.readString();
 						String location = in.readString();
 						
-						game.choiceGui.addTextLine(character + " moved to " + location);
+						if(game.myCharacter.name.compareTo(character) != 0)
+							game.choiceGui.addTextLine(character + " moved to " + location);
 						
 						// Update the map.
 						game.map.moveCharacter(character, location);
 						
 						System.out.println(game.myCharacter.location.name);
-						// Update Choice Options
-						if(!game.myCharacter.location.name.contains("Hallway")){
-							game.choiceGui.setAllOptionsVisible();
-							
-						}
-						else{
-							game.choiceGui.setNoActionConfiguration();
-						}
-							
-						
 					}
 					else if(messageType.compareTo("SuggestionNotification") == 0)
 					{
@@ -253,11 +244,19 @@ public class SocketClientConnection implements Runnable
 						String suggestionRoom = in.readString();
 						String suggestionWeapon = in.readString();
 						
-						//TODO: Log the event. Respond if I am the characterToRespond. Gui functions in gui thread.
+						// Log the event. 
 						game.choiceGui.addTextLine(suggestingCharacter + " suggested that it was " + suggestionCharacter + " in the " + suggestionRoom + " with the " + suggestionWeapon + ". It is " + characterToRespond + "'s turn to respond.");
 						
 						// Update the map since a character gets moved for this.
 						game.map.moveCharacter(suggestionCharacter, suggestionRoom);
+						
+						// Respond if I am the characterToRespond. Gui functions in gui thread.
+						if(game.myCharacter.name.compareTo(characterToRespond) == 0)
+						{
+							SuggestionResponseGUI g = new SuggestionResponseGUI();
+							
+							g.popup(suggestionCharacter, suggestionRoom, suggestionWeapon);
+						}
 					}
 					else if(messageType.compareTo("ForwardResponseToSuggestion") == 0)
 					{
@@ -266,16 +265,13 @@ public class SocketClientConnection implements Runnable
 						
 						//Log the event.
 						
-						// If I was suggesting.
 						if(card.compareTo("NoCard") == 0)
 						{
 							game.choiceGui.addTextLine(respondingCharacter + " could not show a card." );
 						}
-						else if(true) // If I suggested then I get to see which card it was.
+						else if(game.myTurn) // If I suggested then I get to see which card it was.
 						{
 							game.choiceGui.addTextLine(respondingCharacter + " showed: " + card);
-							
-							// TODO: Special handling if I was the suggester.
 						}
 						else // If I was not suggesting I just know there was a card shown.
 						{
@@ -285,8 +281,13 @@ public class SocketClientConnection implements Runnable
 					}
 					else if(messageType.compareTo("SuggestionRoundComplete") == 0)
 					{
-						// TODO: special handling if i was the suggestor. Allow me to accuse or end turn.
 						game.choiceGui.addTextLine("The suggestion round is complete.");
+						
+						if(game.myTurn)
+						{
+							game.choiceGui.addTextLine("I need to make an accusation or finish my turn.");
+							game.choiceGui.setAccusationConfiguration();
+						}
 					}
 					else if(messageType.compareTo("AccusationMade") == 0)
 					{

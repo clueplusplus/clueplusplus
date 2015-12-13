@@ -22,7 +22,7 @@ public class ChoiceSelectionGUI implements ActionListener {
 	 public JButton startGameBtn = new JButton("Start Game");
 	 public JButton makeSuggestionBtn = new JButton("Make Suggestion");
 	 public JButton makeAccusationBtn = new JButton("Make Accusation");
-	 public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
+	 //public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
 	 public JButton endTurnBtn = new JButton("End Turn");
 	 public JTextArea textArea = new JTextArea(20, 40);
 	 public JScrollPane scrollPane = new JScrollPane(textArea); 
@@ -36,17 +36,18 @@ public class ChoiceSelectionGUI implements ActionListener {
 	 public final void initializeGui() {
 		 
 		 textArea.setEditable(false);
+		 textArea.setLineWrap(true);
 		 
 		 startGameBtn.addActionListener(this);
 		 makeSuggestionBtn.addActionListener(this);
 		 makeAccusationBtn.addActionListener(this);
-		 rspToSuggestionBtn.addActionListener(this);
+		 //rspToSuggestionBtn.addActionListener(this);
 		 endTurnBtn.addActionListener(this);		 
 		 
 		 gui.add(startGameBtn, BorderLayout.NORTH);
 		 gui.add(makeSuggestionBtn, BorderLayout.CENTER);
 		 gui.add(makeAccusationBtn, BorderLayout.CENTER);
-		 gui.add(rspToSuggestionBtn, BorderLayout.CENTER);
+		 //gui.add(rspToSuggestionBtn, BorderLayout.CENTER);
 		 gui.add(endTurnBtn, BorderLayout.CENTER);
 		 gui.add(scrollPane, BorderLayout.SOUTH);
 		 
@@ -63,7 +64,7 @@ public class ChoiceSelectionGUI implements ActionListener {
 	            public void run() {
 
 	            	textArea.setText(text + "\n" + textArea.getText());
-
+	            	textArea.setCaretPosition(0);
 	            }
 
 	        });
@@ -84,28 +85,28 @@ public class ChoiceSelectionGUI implements ActionListener {
 	 public void setAllOptionsInvisible(){
 		 makeSuggestionBtn.setVisible(false);
 		 makeAccusationBtn.setVisible(false);
-		 rspToSuggestionBtn.setVisible(false);
+		 //rspToSuggestionBtn.setVisible(false);
 		 endTurnBtn.setVisible(false);
 	 }
 	 
 	 public void setAllOptionsVisible(){
 		 makeSuggestionBtn.setVisible(true);
 		 makeAccusationBtn.setVisible(true);
-		 rspToSuggestionBtn.setVisible(true);
+		 //rspToSuggestionBtn.setVisible(true);
 		 endTurnBtn.setVisible(true);
 	 }
 	 
 	 public void setRoomOptionsInvisible(){
 		 makeSuggestionBtn.setVisible(false);
 		 makeAccusationBtn.setVisible(false);
-		 rspToSuggestionBtn.setVisible(false);
+		 //rspToSuggestionBtn.setVisible(false);
 		 endTurnBtn.setVisible(false);
 	 }
 
 	 public void setRoomOptionsVisible(){
 		 makeSuggestionBtn.setVisible(true);
 		 makeAccusationBtn.setVisible(true);
-		 rspToSuggestionBtn.setVisible(true);
+		 //rspToSuggestionBtn.setVisible(true);
 		 endTurnBtn.setVisible(true);
 	 }
 	 	 
@@ -143,7 +144,7 @@ public class ChoiceSelectionGUI implements ActionListener {
 
 	            	makeSuggestionBtn.setEnabled(false);
 	    			makeAccusationBtn.setEnabled(false);
-	    			rspToSuggestionBtn.setEnabled(false);
+	    			//rspToSuggestionBtn.setEnabled(false);
 	    			endTurnBtn.setEnabled(false);
 
 	            }
@@ -159,7 +160,23 @@ public class ChoiceSelectionGUI implements ActionListener {
 
 	            	makeSuggestionBtn.setEnabled(true);
 	    			makeAccusationBtn.setEnabled(false);
-	    			rspToSuggestionBtn.setEnabled(false);
+	    			//rspToSuggestionBtn.setEnabled(false);
+	    			endTurnBtn.setEnabled(false);
+
+	            }
+
+	        });
+	 }
+	 
+	 public void setSuggestionResponseConfiguration()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	makeSuggestionBtn.setEnabled(false);
+	    			makeAccusationBtn.setEnabled(false);
+	    			//rspToSuggestionBtn.setEnabled(true);
 	    			endTurnBtn.setEnabled(false);
 
 	            }
@@ -175,9 +192,9 @@ public class ChoiceSelectionGUI implements ActionListener {
 
 	            	makeSuggestionBtn.setEnabled(false);
 	    			makeAccusationBtn.setEnabled(true);
-	    			rspToSuggestionBtn.setEnabled(false);
+	    			//rspToSuggestionBtn.setEnabled(false);
 	    			endTurnBtn.setEnabled(true);
-
+	    			
 	            }
 
 	        });
@@ -190,28 +207,53 @@ public class ChoiceSelectionGUI implements ActionListener {
 		{
 			if(game.iAmFirstPlayer)
 			{
-				game.clientConnection.sendStartGame();
-				startGameBtn.setVisible(false);
+				if(game.connectedPlayers < 2)
+				{
+					game.choiceGui.addTextLine("Not enough players to start a game.");
+				}
+				else
+				{				
+					game.clientConnection.sendStartGame();
+					startGameBtn.setVisible(false);
+				}
 			}
 		}
 		else if(arg0.getSource() == makeSuggestionBtn)
 		{
+			GetSuggestionInfo popup = new GetSuggestionInfo();
+			popup.getInfo(false);
+			
+			if(popup.character != null && popup.weapon != null)
+			{
+				game.clientConnection.sendMakeSuggestion(popup.character, game.myCharacter.location.name, popup.weapon);
+				setNoActionConfiguration();
+			}
+			else
+			{
+				addTextLine("You must select a character and a location for a suggestion");
+			}
 			
 		}
 		else if(arg0.getSource() == makeAccusationBtn)
 		{
+			GetSuggestionInfo popup = new GetSuggestionInfo();
+			popup.getInfo(true);
 			
-		}
-		else if(arg0.getSource() == rspToSuggestionBtn)
-		{
-			
+			if(popup.character != null && popup.weapon != null && popup.location != null)
+			{
+				game.clientConnection.sendMakeAccusation(popup.character, popup.location, popup.weapon);
+				setNoActionConfiguration();
+			}
+			else
+			{
+				addTextLine("You must select a character and a location for a suggestion");
+			}			
 		}
 		else if(arg0.getSource() == endTurnBtn)
 		{
 			game.clientConnection.sendEndTurn();
 			
 			game.myTurn = false;
-			game.mySuggestionRound = false;
 			
 			setNoActionConfiguration();
 			

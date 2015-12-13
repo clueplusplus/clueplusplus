@@ -49,11 +49,11 @@ public class Game {
 	// Game state info
 	public boolean iAmFirstPlayer = false;
 	public boolean myTurn = false;
-	public boolean mySuggestionRound = false;
-		
+	public int connectedPlayers = 0;	
+	
 	// Traits assigned to my person
-	Character myCharacter;
-	ArrayList<Card> myCards;
+	public Character myCharacter;
+	public ArrayList<Card> myCards;
 	
 	// A reference deck with all possible cards.
 	public Deck deck = new Deck();
@@ -65,9 +65,9 @@ public class Game {
 	GameBoardGUI gameBoardGui;
     CardGUI cardGui;
     ChecklistGUI checklistGui;
-    ChoiceSelectionGUI choiceGui;
+    public ChoiceSelectionGUI choiceGui;
     
-    JFrame frame;
+    public JFrame frame;
     
 	private Game() {
 		
@@ -79,6 +79,17 @@ public class Game {
 		}
 
 		return instance;
+	}
+	
+	public boolean haveCard(String name)
+	{
+		for(Card c : myCards)
+		{
+			if(c.name.compareTo(name) == 0)
+				return true;
+		}
+		
+		return false;
 	}
 
 	private Game initializeGUIComponents() {
