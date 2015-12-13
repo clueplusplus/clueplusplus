@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -24,8 +25,11 @@ public class ChoiceSelectionGUI implements ActionListener {
 	 public JButton makeAccusationBtn = new JButton("Make Accusation");
 	 //public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
 	 public JButton endTurnBtn = new JButton("End Turn");
-	 public JTextArea textArea = new JTextArea(20, 40);
+	 public JTextArea textArea = new JTextArea(10, 20);
 	 public JScrollPane scrollPane = new JScrollPane(textArea); 
+	 
+	 JPanel northPanel = new JPanel();
+	 JPanel southPanel = new JPanel();
 	 
 	 Game game = Game.getInstance();
 	 
@@ -44,12 +48,16 @@ public class ChoiceSelectionGUI implements ActionListener {
 		 //rspToSuggestionBtn.addActionListener(this);
 		 endTurnBtn.addActionListener(this);		 
 		 
-		 gui.add(startGameBtn, BorderLayout.NORTH);
-		 gui.add(makeSuggestionBtn, BorderLayout.CENTER);
-		 gui.add(makeAccusationBtn, BorderLayout.CENTER);
-		 //gui.add(rspToSuggestionBtn, BorderLayout.CENTER);
-		 gui.add(endTurnBtn, BorderLayout.CENTER);
-		 gui.add(scrollPane, BorderLayout.SOUTH);
+		 gui.setLayout(new BoxLayout(gui, BoxLayout.Y_AXIS));
+		 
+		 northPanel.add(startGameBtn);
+		 northPanel.add(makeSuggestionBtn);
+		 northPanel.add(makeAccusationBtn);
+		 northPanel.add(endTurnBtn);
+		 southPanel.add(scrollPane);
+		 
+		 gui.add(northPanel);
+		 gui.add(southPanel);
 		 
 		 gui.setVisible(true);
 		 
