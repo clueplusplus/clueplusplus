@@ -243,6 +243,7 @@ public class ChoiceSelectionGUI implements ActionListener {
 			{
 				game.clientConnection.sendMakeAccusation(popup.character, popup.location, popup.weapon);
 				setNoActionConfiguration();
+				game.myTurn = false;
 			}
 			else
 			{

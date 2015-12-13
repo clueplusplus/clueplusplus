@@ -220,6 +220,10 @@ public class SocketClientConnection implements Runnable
 								game.choiceGui.setAccusationConfiguration();
 							}
 						}
+						else
+						{
+							game.myTurn = false;
+						}
 					}
 					else if(messageType.compareTo("NotifyMove") == 0)
 					{
@@ -298,17 +302,19 @@ public class SocketClientConnection implements Runnable
 						String accuracy = in.readString(); // "Correct" or "Incorrect"
 												
 						//TODO: Log the event. Gui actions in gui thread.
-						game.choiceGui.addTextLine(accusingCharacter + " accused " + accusationCharacter + " in the " + accusationRoom + " with the " + accusationWeapon + ".");
 						
+						String s = accusingCharacter + " accused " + accusationCharacter + " in the " + accusationRoom + " with the " + accusationWeapon + ". ";
+												
 						if(accuracy.compareTo("Correct") == 0)
 						{
-							game.choiceGui.addTextLine("They were correct!");
+							s = s + " And they were correct!";
 						}
 						else
 						{
-							game.choiceGui.addTextLine("They were incorrect :(");
+							s = s + " But they were incorrect :(";
 						}
 						
+						game.choiceGui.addTextLine(s);
 					}
 					else if(messageType.compareTo("EndGame") == 0)
 					{

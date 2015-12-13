@@ -219,15 +219,32 @@ public class SocketServer implements Runnable
 		}			
 	}
 	
+	private boolean isMurderCard(String name)
+	{
+		for(Card c : murderCards)
+		{
+			if(c.name.compareTo(name) == 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
 	public synchronized void processAccusation(SocketServerConnection c, String character, String room, String weapon)
 	{
 		int accusingPlayerSeat = getPlayerSeat(c);
 		
-		// TODO: Figure out if cards are correct
-		boolean correct = false;
+		// Figure out if cards are correct
+		boolean correct = false;		
+		if(isMurderCard(character))
+			if(isMurderCard(room))
+				if(isMurderCard(weapon))
+					correct = true;
 
+		// Let everyone know.
 		sendAccusationMade(c.characterName, character, room, weapon, correct);
 		
+		// End the game or remove the player from active play.
 		if(correct)
 		{
 			sendEndGame(c.characterName + " guessed correctly!");
@@ -240,12 +257,13 @@ public class SocketServer implements Runnable
 			
 			int count = 0;
 			for(PlayerSeat p : seats)
-				if(p.playerIsStillInGame) count++;
+				if(p.seatTaken && p.playerIsStillInGame)
+					count++;
 			
 			if(count > 1)
 				processEndTurn(c);
 			else
-				this.sendEndGame("There is only one player left. They are the winner!");
+				sendEndGame("There is only one player left. They are the winner!");
 		}
 	}
 	
@@ -406,9 +424,9 @@ public class SocketServer implements Runnable
 	{
 		String accuracy;
 		if(correct)
-			accuracy = "correct";
+			accuracy = "Correct";
 		else
-			accuracy = "incorrect";
+			accuracy = "Incorrect";
 		
 		synchronized(connections)
 		{

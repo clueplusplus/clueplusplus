@@ -1,6 +1,9 @@
 package gameboard;
 
+import java.awt.GridLayout;
+
 import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -29,34 +32,47 @@ public class GetSuggestionInfo
 		
 		JPanel selectionPanel = new JPanel();		
 		
-		ButtonGroup characterButtonGroup = new ButtonGroup();
-		int i = 0;
-		for (String c : characters) {
-			characterButtons[i] = new JRadioButton(characters[i], false);
-			characterButtonGroup.add(characterButtons[i]);
-			selectionPanel.add(characterButtons[i]);
-			i++;
-		}
-				
-		ButtonGroup weaponButtonGroup = new ButtonGroup();
-		i = 0;
-		for (String c : weapons) {
-			weaponButtons[i] = new JRadioButton(weapons[i], false);
-			weaponButtonGroup.add(weaponButtons[i]);
-			selectionPanel.add(weaponButtons[i]);
-			i++;
-		}
+		GridLayout layout = new GridLayout(10, 3);
 		
-		if(getLocation)
-		{
-			ButtonGroup locationButtonGroup = new ButtonGroup();
-			i = 0;
-			for (String c : locations) {
-				locationButtons[i] = new JRadioButton(locations[i], false);
-				locationButtonGroup.add(locationButtons[i]);
-				selectionPanel.add(locationButtons[i]);
-				i++;
+		selectionPanel.setLayout(layout);
+		
+		ButtonGroup characterButtonGroup = new ButtonGroup();
+		ButtonGroup weaponButtonGroup = new ButtonGroup();
+		ButtonGroup locationButtonGroup = new ButtonGroup();
+		
+		for(int i=0; i<10; i++)
+		{		
+			if(i < characters.length)
+			{
+				characterButtons[i] = new JRadioButton(characters[i], false);
+				characterButtonGroup.add(characterButtons[i]);
+				selectionPanel.add(characterButtons[i]);
 			}
+			else
+				selectionPanel.add(new JLabel(""));
+			
+			if(i < weapons.length)
+			{
+				weaponButtons[i] = new JRadioButton(weapons[i], false);
+				weaponButtonGroup.add(weaponButtons[i]);
+				selectionPanel.add(weaponButtons[i]);			
+			}
+			else
+				selectionPanel.add(new JLabel(""));
+			
+			if(getLocation)
+			{				
+				if(i < locations.length)
+				{
+					locationButtons[i] = new JRadioButton(locations[i], false);
+					locationButtonGroup.add(locationButtons[i]);
+					selectionPanel.add(locationButtons[i]);
+				}
+				else
+					selectionPanel.add(new JLabel(""));				
+			}
+			else
+				selectionPanel.add(new JLabel(""));
 		}
 
 		Object[] option = {"Okay"};
