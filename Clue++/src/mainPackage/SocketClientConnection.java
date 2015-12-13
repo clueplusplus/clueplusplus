@@ -1,4 +1,6 @@
 package mainPackage;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -136,6 +138,14 @@ public class SocketClientConnection implements Runnable
 					else if(messageType.compareTo("YouAreFirstPlayer") == 0)
 					{
 						game.choiceGui.setStartVisible();
+						
+						game.choiceGui.startGameBtn.addActionListener(new ActionListener() { 
+							  public void actionPerformed(ActionEvent e) { 
+							    sendStartGame();
+							    game.choiceGui.setStartInvisible();
+							  } 
+						} );
+						
 						//TODO: Record this. I will need to start the game when ready. I will need a button for this.
 						
 					}
