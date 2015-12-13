@@ -51,6 +51,8 @@ public class ChoiceSelectionGUI implements ActionListener {
 		 gui.add(scrollPane, BorderLayout.SOUTH);
 		 
 		 gui.setVisible(true);
+		 
+		 setNoActionConfiguration();
 
 	 }
 	 
@@ -106,15 +108,79 @@ public class ChoiceSelectionGUI implements ActionListener {
 		 rspToSuggestionBtn.setVisible(true);
 		 endTurnBtn.setVisible(true);
 	 }
-	 
-	 
-	 
-	 public void setStartInvisible(){
-		 this.startGameBtn.setVisible(false);
+	 	 
+	 public void setStartInvisible()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	startGameBtn.setVisible(false);
+
+	            }
+
+	        });
+	 }
+	
+	 public void setStartVisible()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	startGameBtn.setVisible(true);
+
+	            }
+
+	        });
 	 }
 	 
-	 public void setStartVisible(){
-		 this.startGameBtn.setVisible(true);
+	 public void setNoActionConfiguration()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	makeSuggestionBtn.setEnabled(false);
+	    			makeAccusationBtn.setEnabled(false);
+	    			rspToSuggestionBtn.setEnabled(false);
+	    			endTurnBtn.setEnabled(false);
+
+	            }
+
+	        });
+	 }
+	 
+	 public void setSuggestionConfiguration()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	makeSuggestionBtn.setEnabled(true);
+	    			makeAccusationBtn.setEnabled(false);
+	    			rspToSuggestionBtn.setEnabled(false);
+	    			endTurnBtn.setEnabled(false);
+
+	            }
+
+	        });
+	 }
+	 
+	 public void setAccusationConfiguration()
+	 {
+		 SwingUtilities.invokeLater(new Runnable() {
+
+	            public void run() {
+
+	            	makeSuggestionBtn.setEnabled(false);
+	    			makeAccusationBtn.setEnabled(true);
+	    			rspToSuggestionBtn.setEnabled(false);
+	    			endTurnBtn.setEnabled(true);
+
+	            }
+
+	        });
 	 }
 
 	@Override
@@ -125,7 +191,6 @@ public class ChoiceSelectionGUI implements ActionListener {
 			if(game.iAmFirstPlayer)
 			{
 				game.clientConnection.sendStartGame();
-				setAllOptionsInvisible();
 				startGameBtn.setVisible(false);
 			}
 		}
@@ -144,8 +209,13 @@ public class ChoiceSelectionGUI implements ActionListener {
 		else if(arg0.getSource() == endTurnBtn)
 		{
 			game.clientConnection.sendEndTurn();
+			
 			game.myTurn = false;
 			game.mySuggestionRound = false;
+			
+			setNoActionConfiguration();
+			
+			addTextLine("My turn is over.");
 		}
 	}
 }

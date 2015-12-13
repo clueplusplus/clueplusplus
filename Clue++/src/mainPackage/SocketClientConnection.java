@@ -191,6 +191,8 @@ public class SocketClientConnection implements Runnable
 						{
 							game.myTurn = true;
 							
+							game.choiceGui.setNoActionConfiguration();
+							
 							// Start my turn. Make sure to call gui functions in gui thread.
 							System.out.println("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name);
 							game.choiceGui.addTextLine("It is my turn.  I am " + myCharacterName + " and I am in " + game.map.getCharacter(myCharacterName).location.name + " and I need to make a move.");
@@ -208,16 +210,13 @@ public class SocketClientConnection implements Runnable
 							if(game.myCharacter.location.isRoom())
 							{
 								game.choiceGui.addTextLine("I now need to make a suggestion.");
-								game.choiceGui.makeSuggestionBtn.setEnabled(true);
+								game.choiceGui.setSuggestionConfiguration();
 							}
 							else
 							{
 								game.choiceGui.addTextLine("I cannot make a suggestion. I need to make an accusation or end my turn.");
-								game.choiceGui.makeSuggestionBtn.setEnabled(false);
-								game.choiceGui.makeAccusationBtn.setEnabled(true);
-								game.choiceGui.endTurnBtn.setEnabled(true);
-							}
-							
+								game.choiceGui.setAccusationConfiguration();
+							}							
 							
 							// Game flow follows from state machine actions.
 						}
@@ -240,7 +239,7 @@ public class SocketClientConnection implements Runnable
 							
 						}
 						else{
-							game.choiceGui.setAllOptionsInvisible();
+							game.choiceGui.setNoActionConfiguration();
 						}
 							
 						
