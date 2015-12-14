@@ -25,7 +25,7 @@ public class ChoiceSelectionGUI implements ActionListener {
 	 public JButton makeAccusationBtn = new JButton("Make Accusation");
 	 //public JButton rspToSuggestionBtn = new JButton("Respond To Suggestion");
 	 public JButton endTurnBtn = new JButton("End Turn");
-	 public JTextArea textArea = new JTextArea(10, 20);
+	 public JTextArea textArea = new JTextArea(10, 30);
 	 public JScrollPane scrollPane = new JScrollPane(textArea); 
 	 
 	 JPanel northPanel = new JPanel();
@@ -50,11 +50,11 @@ public class ChoiceSelectionGUI implements ActionListener {
 		 
 		 gui.setLayout(new BoxLayout(gui, BoxLayout.Y_AXIS));
 		 
-		 northPanel.add(startGameBtn);
-		 northPanel.add(makeSuggestionBtn);
-		 northPanel.add(makeAccusationBtn);
-		 northPanel.add(endTurnBtn);
-		 southPanel.add(scrollPane);
+		 southPanel.add(startGameBtn);
+		 southPanel.add(makeSuggestionBtn);
+		 southPanel.add(makeAccusationBtn);
+		 southPanel.add(endTurnBtn);
+		 northPanel.add(scrollPane);
 		 
 		 gui.add(northPanel);
 		 gui.add(southPanel);
